@@ -1,16 +1,4 @@
 ---
-clean: False
-env: home
-##################
-# Proxy settings #
-##################
-use_proxy: False
-proxy_address:
-  home: "{{ home_proxy_address }}"
-  work: "{{ work_proxy_address }}"
-home_proxy_address: http://172.16.0.90:3128
-work_proxy_address: http://10.144.1.10:8080
-
 ############################
 # Docker registry defaults #
 ############################
@@ -21,16 +9,11 @@ docker_registry_port: 5000
 # Kolla host defaults
 #####################
 kolla_os_default_user: centos
-kolla_os_default_pass: admin
-kolla_node_internal_intf: ens4
-kolla_node_external_intf: ens5
-kolla_openstack_release: 4.0.0
-kolla_node_home_dir: "{{ ansible_env.HOME }}"
 
 #####################
 # Kolla dependencies
 ####################
-packages:
+yum_packages:
   - python-pip
   - python-devel
   - libffi-devel
@@ -41,3 +24,9 @@ packages:
   - python-docker-py
   - ntp
   - vi
+
+pip_packages:
+  - ansible
+  - tox
+  - crudini
+  - python-openstackclient

@@ -1,0 +1,33 @@
+---
+- name: Check if nested virt is loaded
+  stat:
+    path: /sys/module/kvm_intel/parameters/nested
+  register: is_nest_loaded
+
+- name: Check if nested virt is enabled
+  command: "grep -Ei '1|y' /sys/module/kvm_intel/parameters/nested"
+  register: is_nest_enabled
+  when: is_nest_loaded.stat.exists|bool == True
+
+- name: Disable kvm-intel kernel module
+  modprobe:
+    name: kvm-intel
+    state: absent
+  when: (is_nest_loaded.stat.exists|bool == False) or
+        (is_nest_loaded|failed)
+
+- name: Enable nested virtualization
+  lineinfile:
+    path: /etc/modprobe.d/kvm.conf
+    line: 'options kvm-intel nested=y'
+    create: yes
+  when: (is_nest_loaded.stat.exists|bool == False) or
+        (is_nest_loaded|failed)
+
+- name: Enable kvm-intel kernel module
+  modprobe:
+    name: kvm-intel
+    state: present
+  when: (is_nest_loaded.stat.exists|bool == False) or
+        (is_nest_loaded|failed)
+

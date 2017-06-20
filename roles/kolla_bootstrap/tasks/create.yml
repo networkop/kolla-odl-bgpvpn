@@ -1,6 +1,5 @@
 ---
-- name: caching proxy workaround
-  include: yum_proxy.yml
+- include: enable_nested_virt.yml
 
 - name: Disable SELinus
   selinux:
@@ -16,7 +15,7 @@
 - name: Install dependencies
   yum:
     name: "{{ item }}"
-  with_items: "{{ packages}}"
+  with_items: "{{ yum_packages }}"
 
 - name: Check if docker is installed
   command: "docker -v"
@@ -48,7 +47,7 @@
       MountFlags=shared
       EnvironmentFile=/etc/sysconfig/docker
       ExecStart=
-      ExecStart=/usr/bin/docker daemon $INSECURE_REGISTRY
+      ExecStart=/usr/bin/dockerd $INSECURE_REGISTRY
 
 - name: Restart docker
   systemd:
@@ -72,13 +71,10 @@
 
 - name: Install Ansible from PIP
   pip:
-    name:
-      - ansible
-      - tox
-      - crudini
-      - python-openstackclient
+    name: "{{ item }}"
     state: latest
   when: '"DEPLOY" in role|upper'
+  with_items: "{{ pip_packages }}"
 
 - name: Install git
   yum:
@@ -117,7 +113,7 @@
 
 - name: Authorize users' ssh key for default user on all servers
   authorized_key:
-    user: centos
+    user: "{{ ansible_ssh_user }}"
     state: present
     key: "{{ ssh_key['content'] | b64decode }}"
   delegate_to: "{{ hostvars[item]['ansible_ssh_host'] }}"

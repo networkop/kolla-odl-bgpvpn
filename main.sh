@@ -117,7 +117,7 @@ case $ACTION in
       y|Y )
         echo "Good bye!"
         snapshot_do_all 'delete'
-        CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e \"do=destroy\""
+        CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e do=destroy"
         execute_cmd
         ;;
       n|N )
@@ -135,7 +135,7 @@ case $ACTION in
         y|Y )
           echo "Re-building the environment"
           snapshot_do_all 'delete'
-          CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e \"do=create\""
+          CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e do=create"
           execute_cmd
           ;;
         n|N ) echo "Not doing anything" ;;
@@ -143,7 +143,7 @@ case $ACTION in
       esac
     else
       echo "Building new environment"
-      CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e \"do=create\""
+      CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e do=create"
       execute_cmd
     fi
     ;;

@@ -1,8 +1,5 @@
 ---
-
-#- name: debug all variables
-#  debug:
-#    var: kolla_nodes
+- include: enable_nested_virt.yml
 
 - name: Install yum dependencies
   yum:
@@ -149,3 +146,9 @@
     - "{{ kolla_nodes }}"
     - interfaces
   when: "item.1.address is defined"
+
+- name: Insert kolla nodes into ssh_config
+  become: True
+  blockinfile:
+    block: "{{ lookup('template', 'ssh_config.j2') }}"
+    dest: "/etc//ssh/ssh_config"

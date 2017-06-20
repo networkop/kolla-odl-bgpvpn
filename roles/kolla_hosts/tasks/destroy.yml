@@ -21,13 +21,6 @@
   with_items: "{{ kolla_nodes }}"
   ignore_errors: yes
 
-- name: Undefine virtual bridges
-  become: True
-  virt_net:
-    name: "{{ item.role }}"
-    state: absent
-  with_items: "{{ host_interfaces }}"
-
 - name: Delete qcow2 images
   become: True
   file:
