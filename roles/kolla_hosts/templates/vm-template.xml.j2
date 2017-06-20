@@ -1,7 +1,7 @@
 <domain type='kvm' id='17'>
   <name>{{ item.name }}</name>
   <memory unit='KiB'>{{ item.ram * 1024 }}</memory>
-  <vcpu placement='static'>2</vcpu>
+  <vcpu placement='static'>{{ item.vcpu }}</vcpu>
   <resource>
     <partition>/machine</partition>
   </resource>
@@ -30,7 +30,7 @@
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='{{ tmp_dir }}/{{ item.name }}/{{ kolla_os_image }}'/>
+      <source file='{{ libvirt_dir }}/{{ item.name }}.qcow2'/>
       <target dev='hda' bus='ide'/>
       <alias name='ide0-0-0'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>

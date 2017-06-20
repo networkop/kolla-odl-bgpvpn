@@ -1,8 +1,3 @@
-- name: main.yml | Include create.yml
-  include: create.yml
-  when: clean | bool == False
+---
+- include: "{{ action }}.yml"
 
-- name: main.yml | Include clean.yml
-  include: destroy.yml
-  when: clean | bool == True
-  ignore_errors: True

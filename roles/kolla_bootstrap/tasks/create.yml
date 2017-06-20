@@ -1,5 +1,4 @@
 ---
-#- debug: var=hostvars
 - name: caching proxy workaround
   include: yum_proxy.yml
 

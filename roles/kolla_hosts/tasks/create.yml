@@ -2,7 +2,27 @@
 
 #- name: debug all variables
 #  debug:
-#    var: hostvars
+#    var: kolla_nodes
+
+- name: Install yum dependencies
+  yum:
+    name: "{{ item }}" 
+  with_items: "{{ yum_dependencies }}"
+
+- name: Install pip dependencies
+  pip:
+    name: "{{ item }}"
+  with_items: "{{ pip_dependencies }}"
+
+- name: Starting services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items: 
+    - libvirtd
+    - docker
+
 - name: Create a local docker registry
   docker:
     name: registry
@@ -42,21 +62,21 @@
     state: directory
   with_items: "{{ kolla_nodes }}"
 
-- name: Copy os images to VM-specific directories
-  copy:
-    src: "{{ tmp_dir }}/{{ kolla_os_image }}"
-    dest: "{{ tmp_dir }}/{{ item.name }}/"
-    remote_src: True
+- name: Increase the image size
+  command: "qemu-img resize {{ tmp_dir }}/{{ kolla_os_image }} +10G"
   with_items: "{{ kolla_nodes }}"
 
-- name: Increase the image size
-  command: "qemu-img resize {{ tmp_dir }}/{{ item.name }}/{{ kolla_os_image }} +10G"
+- name: Copy os images to libvirt directory
+  copy:
+    src: "{{ tmp_dir }}/{{ kolla_os_image }}"
+    dest: "{{ libvirt_dir }}/{{ item.name }}.qcow2"
+    remote_src: True
   with_items: "{{ kolla_nodes }}"
 
 - name: Instantiate meta-data file
   template:
     src: "meta-data.j2"
-    dest: "{{ tmp_dir}}/{{ item.name }}/meta-data"
+    dest: "{{ tmp_dir }}/{{ item.name }}/meta-data"
   with_items: "{{ kolla_nodes }}"
 
 - name: Instantiate user-data file
