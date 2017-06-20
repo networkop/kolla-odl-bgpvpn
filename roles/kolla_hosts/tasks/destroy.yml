@@ -4,7 +4,7 @@
 #  debug:
 #    var: hostvars
 - name: Stop local docker registry
-  docker:
+  docker_container:
     name: "{{ docker_registry_name }}"
     image: registry:2
     state: absent
@@ -13,15 +13,25 @@
   become: True
   shell: "virsh destroy {{ item.name }}"
   with_items: "{{ kolla_nodes }}"
+  ignore_errors: yes
 
 - name: Undefine VMs
   become: True
   shell: "virsh undefine {{ item.name }}"
   with_items: "{{ kolla_nodes }}"
+  ignore_errors: yes
+
+- name: Undefine virtual bridges
+  become: True
+  virt_net:
+    name: "{{ item.role }}"
+    state: absent
+  with_items: "{{ host_interfaces }}"
 
 - name: Delete qcow2 images
   become: True
   file:
-    path: "{{ tmp_dir }}/{{ item.name }}/{{ kolla_os_image }}"
+    path: "{{ libvirt_dir }}/{{ item.name }}.qcow2"
     state: absent
   with_items: "{{ kolla_nodes }}"
+  ignore_errors: yes

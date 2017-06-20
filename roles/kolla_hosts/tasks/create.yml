@@ -15,41 +15,56 @@
   with_items: "{{ pip_dependencies }}"
 
 - name: Check if bridges already exist
-  state:
-    path: "/sys/devices/virtual/net/{{ item.name }}"
-  with_items: "{{ host_interfaces }}"
+  become: True
+  virt_net:
+    command: list_nets
   register: bridge_exists
 
-- name: create bridge configuratin files
+- name: create virtual bridges 
   become: True
-  template:
-    src: "{{ item.item.role }}.xml.j2"
-    dest: "/etc/libvirt/qemu/networks/{{ item.item.role }}.xml"
+  virt_net:
+    command: define
+    name: "{{ item.role }}"
+    xml: '{{ lookup("template", "{{ item.role }}.xml.j2") }}'
+  when: item.role not in bridge_exists.list_nets
   with_items: "{{ host_interfaces }}"
-  when: not item.stat.exists
-  with_items: "{{ bridge_exists.results }}"
+
+- name: start virtual bridges
+  become: True
+  virt_net:
+    command: start
+    autostart: yes
+    name: "{{ item.role }}"
+  when: item.role not in bridge_exists.list_nets
+  with_items: "{{ host_interfaces }}"
 
 - name: Starting services
   service:
     name: "{{ item }}"
-    state: started
+    state: restarted
     enabled: yes
   with_items:
     - libvirtd
     - docker
 
 - name: Create a local docker registry
-  docker:
+  docker_container:
     name: registry
     image: registry:2
     restart_policy: always
-    ports:
+    published_ports:
       - "5000:5000"
 
 - name: Make sure temp directory exists
   file:
     path: "{{ tmp_dir }}"
     state: directory
+
+- name: Check if the file is already in libvirt directory
+  stat:
+    path: "{{ libvirt_dir }}/{{ item.name }}.qcow2"
+  with_items: "{{ kolla_nodes }}"
+  register: copied
 
 - name: Check if the file is already downloaded
   stat:
@@ -79,14 +94,16 @@
 
 - name: Increase the image size
   command: "qemu-img resize {{ tmp_dir }}/{{ kolla_os_image }} +10G"
-  with_items: "{{ kolla_nodes }}"
+  when: not item.stat.exists
+  with_items: "{{ copied.results }}"
 
 - name: Copy os images to libvirt directory
   copy:
     src: "{{ tmp_dir }}/{{ kolla_os_image }}"
-    dest: "{{ libvirt_dir }}/{{ item.name }}.qcow2"
+    dest: "{{ libvirt_dir }}/{{ item.item.name }}.qcow2"
     remote_src: True
-  with_items: "{{ kolla_nodes }}"
+  when: not item.stat.exists
+  with_items: "{{ copied.results }}"
 
 - name: Instantiate meta-data file
   template:
@@ -132,16 +149,3 @@
     - "{{ kolla_nodes }}"
     - interfaces
   when: "item.1.address is defined"
-
-- name: Add VMs as hosts
-  add_host:
-    name: "{{ item.0.name }}"
-    group: kolla-nodes
-    ansible_ssh_host: "{{ item.1.address }}"
-    ansible_ssh_user: "{{ kolla_os_default_user }}"
-    ansible_ssh_password: "{{ kolla_os_default_pass }}"
-    role: "{{ item.0.role }}"
-  with_subelements:
-    - "{{ kolla_nodes }}"
-    - interfaces
-  when: "item.1.address is defined and item.1.role == 'mgmt'"

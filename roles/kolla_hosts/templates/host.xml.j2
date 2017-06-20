@@ -10,11 +10,10 @@ or other application using the libvirt API.
 {% set dhcp_range_end = host_interfaces | selectattr('role', 'equalto', 'host') | map(attribute='cidr') | join | ipaddr('254') | ipaddr('address') %}
 
 <network>
-  <name>host-only</name>
-  <uuid>25137012-8d98-42f0-a6a9-8f0f6bd8c48a</uuid>
+  <name>{{ item.role }}</name>
   <bridge name='{{ item.bridge }}' stp='on' delay='0'/>
   <mac address='52:54:00:2c:fa:63'/>
-  <domain name='host-only'/>
+  <domain name='{{ item.role }}'/>
   <ip address='{{ ip }}' netmask='{{ netmask }}'>
     <dhcp>
       <range start='{{ dhcp_range_start }}' end='{{ dhcp_range_end }}'/>

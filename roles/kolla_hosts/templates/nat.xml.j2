@@ -6,12 +6,11 @@ or other application using the libvirt API.
 -->
 {% set ip = host_interfaces | selectattr('role', 'equalto', 'nat') | map(attribute='cidr') | join | ipaddr('1') | ipaddr('address') %}
 {% set netmask = host_interfaces | selectattr('role', 'equalto', 'nat') | map(attribute='cidr') | join | ipaddr('netmask') %}
-{% set dhcp_range_start = host_interfaces | selectattr('role', 'equalto', 'nat') | map(attribute='cidr') | join | ipaddr('2') | ipaddr('address') %}
+{% set dhcp_range_start = host_interfaces | selectattr('role', 'equalto', 'nat') | map(attribute='cidr') | join | ipaddr('128') | ipaddr('address') %}
 {% set dhcp_range_end = host_interfaces | selectattr('role', 'equalto', 'nat') | map(attribute='cidr') | join | ipaddr('254') | ipaddr('address') %}
 
 <network>
-  <name>default</name>
-  <uuid>18e81dba-3f1a-4935-8f22-dcf0659d0314</uuid>
+  <name>{{ item.role }}</name>
   <forward mode='nat'/>
   <bridge name='{{ item.bridge }}' stp='on' delay='0'/>
   <mac address='52:54:00:e3:3c:3f'/>

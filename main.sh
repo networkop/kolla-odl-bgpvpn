@@ -108,7 +108,7 @@ case $ACTION in
       y|Y )
         echo "Good bye!"
         snapshot_do_all 'delete'
-        ansible-playbook $ANSIBLE_PLAYBOOK -e "clean=True"
+        ansible-playbook $ANSIBLE_PLAYBOOK -e "do=destroy"
         ;;
       n|N )
         echo "No worries";;
@@ -125,14 +125,14 @@ case $ACTION in
         y|Y )
           echo "Re-building the environment"
           snapshot_do_all 'delete'
-          ansible-playbook $ANSIBLE_PLAYBOOK -e "action=create"
+          ansible-playbook $ANSIBLE_PLAYBOOK -e "do=create"
           ;;
         n|N ) echo "Not doing anything" ;;
         * )   echo "Error: Unrecognised input";;
       esac
     else
       echo "Building new environment"
-      ansible-playbook $ANSIBLE_PLAYBOOK -e "action=create"
+      ansible-playbook $ANSIBLE_PLAYBOOK -e "do=create"
     fi
     ;;
   *)

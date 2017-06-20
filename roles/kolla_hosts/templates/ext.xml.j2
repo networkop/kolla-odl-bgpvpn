@@ -10,12 +10,11 @@ or other application using the libvirt API.
 {% set dhcp_range_end = host_interfaces | selectattr('role', 'equalto', 'ext') | map(attribute='cidr') | join | ipaddr('254') | ipaddr('address') %}
 
 <network>
-  <name>external-nat</name>
-  <uuid>424d6951-7321-41e3-900d-a0f94c0af6df</uuid>
+  <name>{{ item.role }}</name>
   <forward mode='nat'/>
   <bridge name='{{ item.bridge }}' stp='on' delay='0'/>
   <mac address='52:54:00:ec:93:d5'/>
-  <domain name='external-nat'/>
+  <domain name='{{ item.role }}'/>
   <ip address='{{ ip }}' netmask='{{ netmask }}'>
     <dhcp>
     <range start='{{ dhcp_range_start }}' end='{{ dhcp_range_end }}'/>

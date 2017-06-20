@@ -1,0 +1,8 @@
+---
+
+- name: Boostrap kolla VMs
+  hosts: kolla-nodes
+  gather_facts: False
+  become: True
+  roles:
+    - kolla_bootstrap
