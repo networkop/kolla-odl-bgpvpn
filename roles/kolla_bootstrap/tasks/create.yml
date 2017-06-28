@@ -1,0 +1,148 @@
+---
+#- debug: var=hostvars
+- name: caching proxy workaround
+  include: yum_proxy.yml
+
+- name: Disable SELinus
+  selinux:
+    state: disabled
+
+- name: Add epel repository
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    gpgcheck: no
+
+- name: Install dependencies
+  yum:
+    name: "{{ item }}"
+  with_items: "{{ packages}}"
+
+- name: Check if docker is installed
+  command: "docker -v"
+  changed_when: False
+  ignore_errors: True
+  register: docker_is_installed
+
+- name: Install docker
+  shell: curl -sSL https://get.docker.io | bash
+  when: docker_is_installed | failed
+
+- name: Create the drop-in unit directory for docker.service
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+
+- name: Enable insecure registry
+  lineinfile:
+    path: /etc/sysconfig/docker
+    create: yes
+    line: "INSECURE_REGISTRY='--insecure-registry {{ docker_registry_ip }}:{{ docker_registry_port }}'"
+
+- name: Create the drop-in unit file
+  lineinfile:
+    path: /etc/systemd/system/docker.service.d/kolla.conf
+    create: yes
+    line: |
+      [Service]
+      MountFlags=shared
+      EnvironmentFile=/etc/sysconfig/docker
+      ExecStart=
+      ExecStart=/usr/bin/docker daemon $INSECURE_REGISTRY
+
+- name: Restart docker
+  systemd:
+    name: docker
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: Start NTP
+  systemd:
+    name: ntpd
+    enabled: yes
+    state: started
+
+- name: Stop libvirt
+  systemd:
+    name: libvirtd
+    enabled: no
+    state: stopped
+  ignore_errors: True
+
+- name: Install Ansible from PIP
+  pip:
+    name:
+      - ansible
+      - tox
+      - crudini
+      - python-openstackclient
+    state: latest
+  when: '"DEPLOY" in role|upper'
+
+- name: Install git
+  yum:
+    name:
+      - git
+    state: latest
+  when: '"DEPLOY" in role|upper'
+
+- name: Populate /etc/hosts file
+  lineinfile:
+    path: /etc/hosts
+    insertafter: EOF
+    line: "{{ hostvars[item]['ansible_ssh_host'] }}  {{ hostvars[item]['inventory_hostname'] }}"
+  with_items: "{{ groups['kolla-nodes'] }}"
+
+- name: Generate user ssh key
+  become: "{{ ansible_ssh_user }}"
+  user:
+    name: "{{ kolla_os_default_user }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: ~/.ssh/id_rsa
+
+- name: Read users' ssh key
+  become: "{{ ansible_ssh_user }}"
+  slurp:
+    src: "~/.ssh/id_rsa.pub"
+  register: ssh_key
+
+- name: Remove known hosts
+  become: "{{ ansible_ssh_user }}"
+  file:
+    path: "~/.ssh/known_hosts"
+    state: absent
+  ignore_errors: True
+
+- name: Authorize users' ssh key for default user on all servers
+  authorized_key:
+    user: centos
+    state: present
+    key: "{{ ssh_key['content'] | b64decode }}"
+  delegate_to: "{{ hostvars[item]['ansible_ssh_host'] }}"
+  with_items: "{{ groups['kolla-nodes'] }}"
+
+- name: Generate root user ssh key
+  become: True
+  user:
+    name: "{{ kolla_os_default_user }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: ~/.ssh/id_rsa
+
+- name: Read root users' ssh key
+  become: True
+  slurp:
+    src: "~/.ssh/id_rsa.pub"
+  register: root_ssh_key
+
+- name: Authorize users' ssh key for root user on all servers
+  become: True
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ root_ssh_key['content'] | b64decode }}"
+  delegate_to: "{{ hostvars[item]['ansible_ssh_host'] }}"
+  with_items: "{{ groups['kolla-nodes'] }}"

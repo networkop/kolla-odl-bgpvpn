@@ -1,0 +1,9 @@
+- name: Create template directory
+  file:
+    path: "{{ work_dir }}/kolla/docker/opnfv-quagga"
+    state: directory
+
+- name: Create Dockerfile
+  copy:
+    src: "templates/quagga-Dockerfile.j2"
+    dest: "{{ work_dir }}/kolla/docker/opnfv-quagga/Dockerfile.j2"

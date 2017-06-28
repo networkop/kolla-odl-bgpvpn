@@ -1,0 +1,49 @@
+FROM {{ namespace }}/{{ image_prefix }}ovn-base:{{ tag }}
+LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
+
+{% block opnfv_quagga_header %}{% endblock %}
+
+{% import "macros.j2" as macros with context %}
+
+{% if base_distro in ['centos', 'oraclelinux', 'rhel'] %}
+    {% set base_centos_yum_repo_packages = [
+        'epel-release'
+    ] %}
+
+    {% set opnfv_quagga_packages = [
+        'autoconf',
+        'automake',
+        'gcc-c++',
+        'git',
+        'groff',
+        'initscripts',
+        'libcap-devel',
+        'libtool',
+        'make',
+        'ncurses-devel',
+        'python-devel',
+        'python-pip',
+        'readline-devel',
+        'rpm-build',
+        'texinfo',
+        'zeromq',
+        'zeromq-devel'
+    ] %}
+
+     {% set opnfv_quagga_pip_packages = [
+        'cython==0.21.1',
+        'pyzmq==2.2.0',
+        'ply',
+        'six==1.10.0'
+    ] %}
+{% endif %}
+
+{{ macros.install_packages(base_centos_yum_repo_packages | customizable("centos_yum_repo_packages")) }}
+
+{{ macros.install_packages(opnfv_quagga_packages | customizable("packages")) }}
+
+{{ macros.install_pip(opnfv_quagga_pip_packages | customizable("pip_packages")) }}
+
+
+{% block opnfv_quagga_footer %}{% endblock %}
+{% block footer %}{% endblock %}

@@ -1,0 +1,39 @@
+---
+
+# implementing http://serverascode.com/2014/03/29/squid-cache-yum.html
+
+- shell: ls /etc/yum.repos.d/*
+  register: repos
+
+- name: set http proxy in yum
+  lineinfile:
+    path: "/etc/yum.conf"
+    line: "proxy={{ proxy_address[env] }}"
+  when: use_proxy | bool == True
+
+- name: unset http proxy in yum
+  lineinfile:
+    path: "/etc/yum.conf"
+    state: absent
+    line: "proxy={{ proxy_address[env] }}"
+  when: use_proxy | bool == False
+
+- name: disable mirrorlist
+  replace:
+    path: "{{ item }}"
+    regexp: '^(mirrorlist=.*)$'
+    replace: '#\1'
+  with_items: "{{ repos.stdout_lines }}"
+
+- name: enable baserepo
+  replace:
+    path: "{{ item }}"
+    regexp: '#(baseurl=.*)$'
+    replace: '\1'
+  with_items: "{{ repos.stdout_lines }}"
+
+- name: remove fastmiror plugin
+  file:
+    path: "/etc/yum/pluginconf.d/fastestmirror.conf"
+    state: absent
+  ignore_errors: True

@@ -1,0 +1,60 @@
+---
+clean: False
+
+####################
+# Host OS variables
+####################
+home_dir: "{{ ansible_env.HOME }}"
+tmp_dir: "/var/lib/libvirt/images"
+host_os_nat_bridge: virbr0
+host_os_host_bridge: virbr1
+host_os_ext_bridge: virbr3
+docker_registry_name: registry
+
+##########################
+# Kolla OS image variables
+##########################
+kolla_os_image_xz_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2.xz
+kolla_os_image_xz: CentOS-7-x86_64-GenericCloud.qcow2.xz
+kolla_os_image: CentOS-7-x86_64-GenericCloud.qcow2
+kolla_os_default_user: centos
+kolla_os_default_pass: admin
+
+######################
+# Kolla VMs variables
+######################
+kolla_nodes:
+  - name: controller-1
+    ram: 6144
+    role: controller-deploy
+    interfaces:
+      - name: ens3
+        mode: dhcp
+        role: ilo
+      - name: ens4
+        mode: static
+        address: 192.168.133.100
+        netmask: 255.255.255.0
+        role: mgmt
+      - name: ens5
+        mode: static
+        address: 192.168.150.100
+        netmask: 255.255.255.0
+        role: ext
+  - name: compute-1
+    ram: 2048
+    role: compute
+    interfaces:
+      - name: ens3
+        mode: dhcp
+        role: ilo
+      - name: ens4
+        mode: static
+        address: 192.168.133.101
+        netmask: 255.255.255.0
+        role: mgmt
+      - name: ens5
+        mode: static
+        address: 192.168.150.101
+        netmask: 255.255.255.0
+        role: ext

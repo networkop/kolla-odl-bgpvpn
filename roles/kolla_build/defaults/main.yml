@@ -1,0 +1,49 @@
+---
+clean: False
+
+###############
+# Kolla nodes #
+###############
+
+kolla_hypervisor: localhost
+kolla_vm_snapshot_name: pre-deploy
+kolla_vm_names:
+  - controller-1
+  - compute-1
+
+############################
+# Docker registry defaults #
+############################
+docker_registry_ip: 172.26.0.1
+docker_registry_port: 5000
+
+#################
+# Build default #
+#################
+tmp_dir: /tmp
+
+build_overrides:
+  - section: opnfv-quagga
+    option: type
+    value: git
+  - section: opnfv-quagga
+    option: location
+    value: https://github.com/opensourcerouting/opnfv-quagga-packaging.git
+  - section: opnfv-quagga
+    option: reference
+    value: master
+  - section: DEFAULT
+    option: template_override
+    value: "{{ tmp_dir }}/kolla/contrib/template-override/opendaylight-template-overrides.j2"
+  - section: DEFAULT
+    option: push
+    value: true
+  - section: DEFAULT
+    option: registry
+    value: "{{ docker_registry_ip }}:{{ docker_registry_port }}"
+  - section: DEFAULT
+    option: install_type
+    value: source
+  - section: profiles
+    option: odl
+    value: opendaylight,opnfv-quagga,chrony,cron,kolla-toolbox,fluentd,glance,haproxy,heat,horizon,keepalived,keystone,mariadb,memcached,neutron,nova,openvswitch,rabbitmq

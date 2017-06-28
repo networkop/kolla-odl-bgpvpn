@@ -1,0 +1,27 @@
+---
+
+#- name: debug all variables
+#  debug:
+#    var: hostvars
+- name: Stop local docker registry
+  docker:
+    name: "{{ docker_registry_name }}"
+    image: registry:2
+    state: absent
+
+- name: Destroy VMs
+  become: True
+  shell: "virsh destroy {{ item.name }}"
+  with_items: "{{ kolla_nodes }}"
+
+- name: Undefine VMs
+  become: True
+  shell: "virsh undefine {{ item.name }}"
+  with_items: "{{ kolla_nodes }}"
+
+- name: Delete qcow2 images
+  become: True
+  file:
+    path: "{{ tmp_dir }}/{{ item.name }}/{{ kolla_os_image }}"
+    state: absent
+  with_items: "{{ kolla_nodes }}"

@@ -1,0 +1,13 @@
+---
+
+- name: Create kolla VMs
+  hosts: hypervisors
+  roles:
+    - kolla_hosts
+
+- name: Boostrap kolla VMs
+  hosts: kolla-nodes
+  gather_facts: False
+  become: True
+  roles:
+    - kolla_bootstrap

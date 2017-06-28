@@ -1,0 +1,15 @@
+---
+
+- hosts: localhost
+
+
+
+  tasks:
+    - name: stat a file
+      stat:
+        path: /etc/hosts
+      register: file_a_stat
+
+    - name: debug all variables
+      debug:
+        var: hostvars

@@ -1,0 +1,112 @@
+---
+
+#- name: debug all variables
+#  debug:
+#    var: hostvars
+- name: Create a local docker registry
+  docker:
+    name: registry
+    image: registry:2
+    restart_policy: always
+    ports:
+      - "5000:5000"
+
+- name: Make sure temp directory exists
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
+
+- name: Check if the file is already downloaded
+  stat:
+    path: "{{ tmp_dir }}/{{ kolla_os_image_xz }}"
+  register: downloaded
+
+- name: Check if the file is already unpacked
+  stat:
+    path: "{{ tmp_dir }}/{{ kolla_os_image }}"
+  register: unpacked
+
+- name: Download Operating System image
+  get_url:
+    url: "{{ kolla_os_image_xz_url }}"
+    dest: "{{ tmp_dir }}"
+  when: not (downloaded.stat.exists or unpacked.stat.exists)
+
+- name: Uncompress OS image
+  command: "unxz -k {{ tmp_dir }}/{{ kolla_os_image_xz }}"
+  when: not unpacked.stat.exists
+
+- name: create VM-specifc directories
+  file:
+    path: "{{ tmp_dir }}/{{ item.name }}"
+    state: directory
+  with_items: "{{ kolla_nodes }}"
+
+- name: Copy os images to VM-specific directories
+  copy:
+    src: "{{ tmp_dir }}/{{ kolla_os_image }}"
+    dest: "{{ tmp_dir }}/{{ item.name }}/"
+    remote_src: True
+  with_items: "{{ kolla_nodes }}"
+
+- name: Increase the image size
+  command: "qemu-img resize {{ tmp_dir }}/{{ item.name }}/{{ kolla_os_image }} +10G"
+  with_items: "{{ kolla_nodes }}"
+
+- name: Instantiate meta-data file
+  template:
+    src: "meta-data.j2"
+    dest: "{{ tmp_dir}}/{{ item.name }}/meta-data"
+  with_items: "{{ kolla_nodes }}"
+
+- name: Instantiate user-data file
+  template:
+    src: "user-data.j2"
+    dest: "{{ tmp_dir}}/{{ item.name }}/user-data"
+  with_items: "{{ kolla_nodes }}"
+
+- name: Create config drive
+  become: True
+  command: "genisoimage -o {{ tmp_dir }}/{{ item.name }}/config.iso \
+           -V cidata -r -J {{ tmp_dir }}/{{ item.name }}/meta-data \
+           {{ tmp_dir }}/{{ item.name }}/user-data"
+  with_items: "{{ kolla_nodes }}"
+
+- name: Define a VM
+  become: True
+  virt:
+    name: "{{ item.name }}"
+    command: define
+    xml: "{{ lookup('template', 'vm-template.xml.j2') }}"
+  with_items: "{{ kolla_nodes }}"
+
+- name: Start a VM
+  become: True
+  virt:
+    name: "{{ item.name }}"
+    state: running
+  with_items: "{{ kolla_nodes }}"
+
+- name: Wait for VMs to boot
+  wait_for:
+    host: "{{ item.1.address }}"
+    port: 22
+    delay: 10
+    timeout: 250
+  with_subelements:
+    - "{{ kolla_nodes }}"
+    - interfaces
+  when: "item.1.address is defined"
+
+- name: Add VMs as hosts
+  add_host:
+    name: "{{ item.0.name }}"
+    group: kolla-nodes
+    ansible_ssh_host: "{{ item.1.address }}"
+    ansible_ssh_user: "{{ kolla_os_default_user }}"
+    ansible_ssh_password: "{{ kolla_os_default_pass }}"
+    role: "{{ item.0.role }}"
+  with_subelements:
+    - "{{ kolla_nodes }}"
+    - interfaces
+  when: "item.1.address is defined and item.1.role == 'mgmt'"

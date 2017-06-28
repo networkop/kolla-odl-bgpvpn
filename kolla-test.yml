@@ -1,0 +1,33 @@
+---
+
+
+- name: Boostrap kolla VMs
+  hosts: kolla-nodes
+  become: True
+  vars:
+    kolla_os_default_user: centos
+    kolla_os_default_pass: admin
+
+  tasks:
+    - debug: var=hostvars
+
+    - name: Generate user ssh key
+      user:
+        name: "{{ kolla_os_default_user }}"
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: ~/.ssh/id_rsa
+
+    - name: Read users' ssh key
+      become: "{{ ansible_ssh_user }}"
+      slurp:
+        src: "~/.ssh/id_rsa.pub"
+      register: ssh_key
+
+    - name: Authorize users' ssh key on all servers
+      authorized_key:
+        user: centos
+        state: present
+        key: "{{ ssh_key['content'] | b64decode }}"
+      delegate_to: "{{ hostvars[item]['ansible_ssh_host'] }}"
+      with_items: "{{ groups['kolla-nodes'] }}"

@@ -1,0 +1,53 @@
+---
+clean: False
+
+###############
+# Kolla nodes #
+###############
+
+kolla_hypervisor: localhost
+kolla_vm_snapshot_name: post-install
+kolla_vm_names:
+  - controller-1
+  - compute-1
+
+#############################
+# Kolla passwords overrides #
+#############################
+password_overrides:
+  keystone_admin_password: admin
+
+###############################
+# Kolla globals.yml overrides #
+###############################
+globals_override:
+  network_interface: "{{ kolla_node_internal_intf }}"
+  neutron_external_interface: "{{ kolla_node_external_intf }}"
+  kolla_install_type: "source"
+  docker_registry: "{{ docker_registry_ip }}:{{ docker_registry_port }}"
+  neutron_plugin_agent: "opendaylight"
+  opendaylight_mechanism_driver: "opendaylight_v2"
+  enable_opendaylight_l3: "yes"
+  enable_opendaylight_qos: "no"
+  enable_odl_legacy_netvirt_conntrack: "no"
+  kolla_internal_vip_address: 192.168.133.254
+  docker_namespace: "kolla"
+  opendaylight_port_binding_type: "network-topology"
+  opendaylight_features: "odl-mdsal-apidocs,odl-netvirt-openstack"
+  opendaylight_leader_ip_address: "192.168.133.100"
+  opendaylight_restconf_port: "8087"
+  enable_opendaylight: "yes"
+
+############################
+# Docker registry defaults #
+############################
+docker_registry_ip: 172.26.0.1
+docker_registry_port: 5000
+
+#####################
+# Kolla host defaults
+#####################
+tmp_dir: "/tmp"
+kolla_node_internal_intf: ens4
+kolla_node_external_intf: ens5
+kolla_node_home_dir: "{{ ansible_env.HOME }}"

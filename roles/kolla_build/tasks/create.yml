@@ -1,0 +1,41 @@
+---
+
+- name: clone kolla repository
+  git:
+    repo: https://github.com/openstack/kolla
+    dest: "{{ tmp_dir }}/kolla"
+
+- name: install kolla
+  pip:
+    name: "file://{{ tmp_dir }}/kolla"
+
+- name: generate build config file
+  command: "tox -e genconfig"
+  args:
+    chdir: "{{ tmp_dir }}/kolla"
+    creates: "{{ tmp_dir }}/kolla/etc/kolla/kolla-build.conf"
+
+- name: create kolla etc directory
+  file:
+    path: "/etc/kolla"
+    state: directory
+
+- name: copy configuration file to /etc
+  copy:
+    src: "{{ tmp_dir }}/kolla/etc/kolla/kolla-build.conf"
+    dest: "/etc/kolla/kolla-build.conf"
+    remote_src: True
+
+- name: Override build variables
+  ini_file:
+    path: "/etc/kolla/kolla-build.conf"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items: "{{ build_overrides }}"
+
+- include: opnfv-quagga-build.yml work_dir="{{ tmp_dir }}"
+
+- name: build all containers
+  command: "kolla-build -n kolla --push --profile odl"
+  changed_when: False

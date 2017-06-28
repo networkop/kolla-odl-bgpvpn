@@ -1,0 +1,7 @@
+---
+
+- hosts: kolla-ansible
+
+  roles:
+    - kolla_build
+  become: True

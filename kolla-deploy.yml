@@ -1,0 +1,6 @@
+---
+
+- hosts: kolla-ansible
+
+  roles:
+    - kolla_deploy

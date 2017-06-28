@@ -1,0 +1,69 @@
+---
+
+- name: Install pip
+  become: True
+  yum:
+    name: python-pip
+
+- name: clone kolla-ansible repository
+  git:
+    repo: https://github.com/openstack/kolla-ansible
+    dest: "{{ tmp_dir }}/kolla-ansible"
+
+- name: fetch ODL change
+  shell: "git fetch https://git.openstack.org/openstack/kolla-ansible refs/changes/67/416367/72 && git checkout FETCH_HEAD"
+  args:
+    chdir: "{{ tmp_dir }}/kolla-ansible"
+
+- name: Install kolla-ansible
+  become: True
+  pip:
+    name: "file://{{ tmp_dir }}/kolla-ansible"
+
+- name: Copy the configuration files globals.yml and passwords.yml to /etc directory
+  become: True
+  command: cp -r {{ tmp_dir }}/kolla-ansible/etc/kolla /etc/kolla/
+
+#- name: Copy the inventory file
+#  command: "cp {{ tmp_dir }}/kolla-ansible/ansible/inventory/multinode {{ kolla_node_home_dir }}"
+
+- name: Override globals.yml options
+  become: True
+  lineinfile:
+    path: /etc/kolla/globals.yml
+    regexp: "{{ item.key }}:"
+    line: "{{ item.key }}: \"{{ item.value }}\""
+    create: yes
+    state: present
+  with_dict: "{{ globals_override }}"
+
+- name: Generate random passwords
+  become: True
+  command: kolla-genpwd
+
+- name: Override passwords
+  become: True
+  lineinfile:
+    path: /etc/kolla/passwords.yml
+    regexp: "{{ item.key }}"
+    line: "{{ item.key }}: {{ item.value }}"
+  with_dict: "{{ password_overrides }}"
+  when: password_overrides is defined
+
+- name: Create multinode inventory file
+  template:
+    src: "multinode.j2"
+    dest: "{{ kolla_node_home_dir }}/multinode"
+
+- name: Kolla prechecks
+  command: "kolla-ansible prechecks -i {{ kolla_node_home_dir }}/multinode"
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: False
+
+#- name: Kolla deploy
+#  command: "kolla-ansible deploy -i {{ kolla_node_home_dir }}/multinode"
+#  environment:
+#    ANSIBLE_HOST_KEY_CHECKING: False
+
+#- name: Kolla post-deploy
+#  command: "kolla-ansible deploy"
