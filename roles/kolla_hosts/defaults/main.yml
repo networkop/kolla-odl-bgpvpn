@@ -9,15 +9,15 @@ libvirt_dir: "/var/lib/libvirt/images"
 host_interfaces:
   - name: ens33
     role: nat
+    bridge: virbr0
   - name: ens34
     role: host
     cidr: 192.168.133.0/24
+    bridge: virbr1
   - name: ens35
     role: ext
     cidr: 192.168.150.0/24
-host_os_nat_bridge: virbr0
-host_os_host_bridge: virbr1
-host_os_ext_bridge: virbr3
+    bridge: virbr3
 docker_registry_name: registry
 yum_dependencies:
   - docker

@@ -6,7 +6,7 @@
 
 - name: Install yum dependencies
   yum:
-    name: "{{ item }}" 
+    name: "{{ item }}"
   with_items: "{{ yum_dependencies }}"
 
 - name: Install pip dependencies
@@ -14,12 +14,27 @@
     name: "{{ item }}"
   with_items: "{{ pip_dependencies }}"
 
+- name: Check if bridges already exist
+  state:
+    path: "/sys/devices/virtual/net/{{ item.name }}"
+  with_items: "{{ host_interfaces }}"
+  register: bridge_exists
+
+- name: create bridge configuratin files
+  become: True
+  template:
+    src: "{{ item.item.role }}.xml.j2"
+    dest: "/etc/libvirt/qemu/networks/{{ item.item.role }}.xml"
+  with_items: "{{ host_interfaces }}"
+  when: not item.stat.exists
+  with_items: "{{ bridge_exists.results }}"
+
 - name: Starting services
   service:
     name: "{{ item }}"
     state: started
     enabled: yes
-  with_items: 
+  with_items:
     - libvirtd
     - docker
 
