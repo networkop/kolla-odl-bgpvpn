@@ -5,6 +5,8 @@
     repo: https://github.com/openstack/kolla
     dest: "{{ tmp_dir }}/kolla"
 
+- include: opnfv-quagga-build.yml work_dir="{{ tmp_dir }}"
+
 - name: install kolla
   pip:
     name: "file://{{ tmp_dir }}/kolla"
@@ -33,8 +35,6 @@
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   with_items: "{{ build_overrides }}"
-
-- include: opnfv-quagga-build.yml work_dir="{{ tmp_dir }}"
 
 - name: build all containers
   command: "kolla-build -n kolla --push --profile odl"

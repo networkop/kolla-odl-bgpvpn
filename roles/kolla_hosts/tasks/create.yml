@@ -2,11 +2,13 @@
 - include: enable_nested_virt.yml
 
 - name: Install yum dependencies
-  yum:
+  become: True
+  package:
     name: "{{ item }}"
   with_items: "{{ yum_dependencies }}"
 
 - name: Install pip dependencies
+  become: True
   pip:
     name: "{{ item }}"
   with_items: "{{ pip_dependencies }}"
@@ -21,9 +23,9 @@
   become: True
   virt_net:
     command: define
-    name: "{{ item.role }}"
+    name: "{{ item.name }}"
     xml: '{{ lookup("template", "{{ item.role }}.xml.j2") }}'
-  when: item.role not in bridge_exists.list_nets
+  when: item.name not in bridge_exists.list_nets
   with_items: "{{ host_interfaces }}"
 
 - name: start virtual bridges
@@ -31,11 +33,12 @@
   virt_net:
     command: start
     autostart: yes
-    name: "{{ item.role }}"
-  when: item.role not in bridge_exists.list_nets
+    name: "{{ item.name }}"
+  when: item.name not in bridge_exists.list_nets
   with_items: "{{ host_interfaces }}"
 
 - name: Starting services
+  become: True
   service:
     name: "{{ item }}"
     state: restarted
@@ -95,6 +98,7 @@
   with_items: "{{ copied.results }}"
 
 - name: Copy os images to libvirt directory
+  become: True
   copy:
     src: "{{ tmp_dir }}/{{ kolla_os_image }}"
     dest: "{{ libvirt_dir }}/{{ item.item.name }}.qcow2"

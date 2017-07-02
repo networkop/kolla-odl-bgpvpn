@@ -1,14 +1,17 @@
 ---
 host_interfaces:
-  - role: default
+  - name: default
+    role: nat
     cidr: 192.168.122.0/24
     bridge: virbr0
-    name: ens3
-  - role: host-only
+    vnic: ens3
+  - name: host-only
+    role: host
     cidr: 192.168.133.0/24
     bridge: virbr1
-    name: ens4
-  - role: external-nat
+    vnic: ens4
+  - name: external-nat
+    role: ext
     cidr: 192.168.150.0/24
     bridge: virbr3
-    name: ens5
+    vnic: ens5

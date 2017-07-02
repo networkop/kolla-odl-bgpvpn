@@ -6,14 +6,14 @@
     <partition>/machine</partition>
   </resource>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-rhel7.0.0'>hvm</type>
+    <type arch='x86_64'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
     <acpi/>
     <apic/>
   </features>
-  <cpu mode='host-passthrough'/>
+  <cpu mode='host-model'/>
   <clock offset='utc'>
     <timer name='rtc' tickpolicy='catchup'/>
     <timer name='pit' tickpolicy='delay'/>
@@ -27,7 +27,7 @@
     <suspend-to-disk enabled='no'/>
   </pm>
   <devices>
-    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <emulator>/usr/bin/qemu-kvm</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='{{ libvirt_dir }}/{{ item.name }}.qcow2'/>

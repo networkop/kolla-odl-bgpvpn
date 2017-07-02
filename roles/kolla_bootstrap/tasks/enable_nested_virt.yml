@@ -8,13 +8,15 @@
   command: "grep -Ei '1|y' /sys/module/kvm_intel/parameters/nested"
   register: is_nest_enabled
   when: is_nest_loaded.stat.exists|bool == True
+  changed_when: False
+  ignore_errors: True
 
 - name: Disable kvm-intel kernel module
   modprobe:
     name: kvm-intel
     state: absent
   when: (is_nest_loaded.stat.exists|bool == False) or
-        (is_nest_loaded|failed)
+        (is_nest_enabled|failed)
 
 - name: Enable nested virtualization
   lineinfile:
@@ -22,12 +24,12 @@
     line: 'options kvm-intel nested=y'
     create: yes
   when: (is_nest_loaded.stat.exists|bool == False) or
-        (is_nest_loaded|failed)
+        (is_nest_enabled|failed)
 
 - name: Enable kvm-intel kernel module
   modprobe:
     name: kvm-intel
     state: present
   when: (is_nest_loaded.stat.exists|bool == False) or
-        (is_nest_loaded|failed)
+        (is_nest_enabled|failed)
 
