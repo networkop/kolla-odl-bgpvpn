@@ -30,6 +30,15 @@ check_if_one_arg () {
   fi
 }
 
+execute_cmd () {
+  echo -e "\n$ACTION : $CMD"
+  $CMD
+  if [[ $? -ne 0 ]]; then
+    echo -e "\nCommand failed: $CMD"
+    exit 1
+  fi
+}
+
 snapshot_exists () {
   check_if_one_arg "$@"
   DOMAIN_ID=$1
@@ -108,7 +117,8 @@ case $ACTION in
       y|Y )
         echo "Good bye!"
         snapshot_do_all 'delete'
-        ansible-playbook $ANSIBLE_PLAYBOOK -e "do=destroy"
+        CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e \"do=destroy\""
+        execute_cmd
         ;;
       n|N )
         echo "No worries";;
@@ -125,14 +135,16 @@ case $ACTION in
         y|Y )
           echo "Re-building the environment"
           snapshot_do_all 'delete'
-          ansible-playbook $ANSIBLE_PLAYBOOK -e "do=create"
+          CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e \"do=create\""
+          execute_cmd
           ;;
         n|N ) echo "Not doing anything" ;;
         * )   echo "Error: Unrecognised input";;
       esac
     else
       echo "Building new environment"
-      ansible-playbook $ANSIBLE_PLAYBOOK -e "do=create"
+      CMD="ansible-playbook $ANSIBLE_PLAYBOOK -e \"do=create\""
+      execute_cmd
     fi
     ;;
   *)

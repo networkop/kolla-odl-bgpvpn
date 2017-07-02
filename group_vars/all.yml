@@ -1,0 +1,14 @@
+---
+host_interfaces:
+  - role: nat
+    cidr: 192.168.122.0/24
+    bridge: virbr0
+    name: ens3
+  - role: host
+    cidr: 192.168.133.0/24
+    bridge: virbr1
+    name: ens4
+  - role: ext
+    cidr: 192.168.144.0/24
+    bridge: virbr3
+    name: ens5
