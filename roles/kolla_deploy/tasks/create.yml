@@ -11,7 +11,7 @@
     dest: "{{ tmp_dir }}/kolla-ansible"
 
 - name: fetch ODL change
-  shell: "git fetch https://git.openstack.org/openstack/kolla-ansible refs/changes/67/416367/72 && git checkout FETCH_HEAD"
+  shell: "git fetch https://git.openstack.org/openstack/kolla-ansible {{ kolla_odl_git_refs }} && git checkout FETCH_HEAD"
   args:
     chdir: "{{ tmp_dir }}/kolla-ansible"
 

@@ -6,7 +6,6 @@ clean: False
 ###############
 
 kolla_hypervisor: localhost
-kolla_vm_snapshot_name: pre-deploy
 kolla_vm_names:
   - controller-1
   - compute-1

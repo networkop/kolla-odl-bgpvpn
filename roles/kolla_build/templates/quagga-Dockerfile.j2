@@ -1,4 +1,4 @@
-FROM {{ namespace }}/{{ image_prefix }}ovn-base:{{ tag }}
+FROM {{ namespace }}/{{ image_prefix }}base:{{ tag }}
 LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
 
 {% block opnfv_quagga_header %}{% endblock %}
@@ -44,6 +44,11 @@ LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build
 
 {{ macros.install_pip(opnfv_quagga_pip_packages | customizable("pip_packages")) }}
 
+RUN git clone https://github.com/opensourcerouting/opnfv-quagga-packaging.git && \
+    cd opnfv-quagga && \
+    make && \
+    cd rpm_packages && \
+    yum localinstall * || :
 
 {% block opnfv_quagga_footer %}{% endblock %}
 {% block footer %}{% endblock %}
