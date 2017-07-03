@@ -27,7 +27,7 @@
     <suspend-to-disk enabled='no'/>
   </pm>
   <devices>
-    <emulator>/usr/bin/qemu-kvm</emulator>
+    <emulator>{{ host_qemu_path }}</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='{{ libvirt_dir }}/{{ item.name }}.qcow2'/>

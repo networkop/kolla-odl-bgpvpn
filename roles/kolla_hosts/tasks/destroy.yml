@@ -8,6 +8,7 @@
     name: "{{ docker_registry_name }}"
     image: registry:2
     state: absent
+  ignore_errors: True
 
 - name: Destroy VMs
   become: True

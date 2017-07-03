@@ -10,7 +10,7 @@ or other application using the libvirt API.
 {% set dhcp_range_end = host_interfaces | selectattr('role', 'equalto', 'ext') | map(attribute='cidr') | join | ipaddr('254') | ipaddr('address') %}
 
 <network>
-  <name>{{ item.role }}</name>
+  <name>{{ item.name }}</name>
   <forward mode='nat'/>
   <bridge name='{{ item.bridge }}' stp='on' delay='0'/>
   <mac address='52:54:00:ec:93:d5'/>

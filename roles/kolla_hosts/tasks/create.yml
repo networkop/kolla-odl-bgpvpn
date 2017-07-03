@@ -1,6 +1,15 @@
 ---
 - include: enable_nested_virt.yml
 
+- name: Enable docker repo
+  yum_repository:
+    name: docker-ce
+    description: Docker CE repo
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    gpgcheck: yes
+    gpgkey: https://download.docker.com/linux/centos/gpg
+  when: ansible_distribution == "CentOS"
+
 - name: Install yum dependencies
   become: True
   package:
@@ -12,6 +21,22 @@
   pip:
     name: "{{ item }}"
   with_items: "{{ pip_dependencies }}"
+
+- name: Update docker BIP
+  lineinfile:
+    path: /usr/lib/systemd/system/docker.service
+    regexp: "ExecStart=/usr/bin/dockerd"
+    line: "ExecStart=/usr/bin/dockerd --bip=172.26.0.1/16"
+
+- name: Starting services
+  become: True
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - libvirtd
+    - docker
 
 - name: Check if bridges already exist
   become: True
@@ -37,7 +62,7 @@
   when: item.name not in bridge_exists.list_nets
   with_items: "{{ host_interfaces }}"
 
-- name: Starting services
+- name: Restarting services
   become: True
   service:
     name: "{{ item }}"
