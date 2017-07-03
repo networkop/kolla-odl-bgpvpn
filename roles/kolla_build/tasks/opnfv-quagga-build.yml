@@ -7,8 +7,3 @@
   copy:
     src: "templates/quagga-Dockerfile.j2"
     dest: "{{ work_dir }}/kolla/docker/opnfv-quagga/Dockerfile.j2"
-
-- name: add opnfv to sources
-  lineinfile:
-    path: "{{ work_dir }}/kolla/kolla.egg-info/SOURCES.txt"
-    line: "docker/opnfv-quagga/Dockerfile.j2"
