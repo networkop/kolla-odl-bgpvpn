@@ -21,7 +21,6 @@ yum_packages:
   - openssl
   - redhat-rpm-config
   - gcc
-  - python-docker-py
   - ntp
   - vi
 
@@ -30,3 +29,4 @@ pip_packages:
   - tox
   - crudini
   - python-openstackclient
+  - docker
