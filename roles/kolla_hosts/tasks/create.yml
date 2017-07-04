@@ -23,6 +23,7 @@
   with_items: "{{ pip_dependencies }}"
 
 - name: Update docker BIP
+  become: True
   lineinfile:
     path: /usr/lib/systemd/system/docker.service
     regexp: "ExecStart=/usr/bin/dockerd"
