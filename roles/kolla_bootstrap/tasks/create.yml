@@ -15,6 +15,7 @@
 - name: Install dependencies
   yum:
     name: "{{ item }}"
+    update_cache: yes
   with_items: "{{ yum_packages }}"
 
 - name: Check if docker is installed
@@ -64,13 +65,6 @@
     name: ntpd
     enabled: yes
     state: started
-
-- name: Stop libvirt
-  systemd:
-    name: libvirtd
-    enabled: no
-    state: stopped
-  ignore_errors: True
 
 - name: Install Ansible from PIP
   pip:
