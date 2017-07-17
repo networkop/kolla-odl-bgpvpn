@@ -1,0 +1,19 @@
+---
+- name: Restart quagga container
+  vars:
+    service_name: "quagga"
+    service: "{{ quagga_services[service_name] }}"
+  kolla_docker:
+    action: "recreate_or_restart_container"
+    common_options: "{{ docker_common_options }}"
+    name: "{{ service.container_name }}"
+    image: "{{ service.image }}"
+    volumes: "{{ service.volumes }}"
+    privileged: "{{ service.privileged | default(False) }}"
+  when:
+    - action != "config"
+    - service.enabled | bool
+    - service.host_in_groups | bool
+    - quagga_config_jsons | changed
+      or quagga_confs | changed
+      or check_quagga_containers | changed

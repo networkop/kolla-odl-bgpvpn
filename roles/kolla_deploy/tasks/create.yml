@@ -55,10 +55,43 @@
     src: "multinode.j2"
     dest: "{{ kolla_node_home_dir }}/multinode"
 
+
+- name: Create opnfv-quagga directory structure
+  become: True
+  file:
+    path: "/usr/share/kolla-ansible/ansible/roles/opnfv-quagga/{{ item.name }}"
+    state: directory
+  with_items: "{{ quagga_files }}"
+  when: quagga_files is defined
+
+- name: Add opnfv-quagga role files
+  become: True
+  copy:
+    src: "./files/quagga-{{ item.0.name }}-{{ item.1 }}"
+    dest: "/usr/share/kolla-ansible/ansible/roles/opnfv-quagga/{{ item.0.name }}/{{ item.1 }}"
+  with_subelements:
+    - "{{ quagga_files }}"
+    - files
+  when: quagga_files is defined
+
+- name: Add opnfv-quagga role to site.yml
+  become: True
+  blockinfile:
+    path: "/usr/share/kolla-ansible/ansible/site.yml"
+    block: |
+      - name: Apply quagga role
+        gather_facts: false
+        hosts: quagga
+        roles:
+          - { role: opnfv-quagga,
+              tags: opnfv-quagga }
+  when: quagga_files is defined
+
 - name: Kolla prechecks
   command: "kolla-ansible prechecks -i {{ kolla_node_home_dir }}/multinode"
   environment:
     ANSIBLE_HOST_KEY_CHECKING: False
+
 
 #- name: Kolla deploy
 #  command: "kolla-ansible deploy -i {{ kolla_node_home_dir }}/multinode"

@@ -5,6 +5,13 @@ LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build
 
 {% import "macros.j2" as macros with context %}
 
+{% set name='quagga' %}
+{% set homedir='/var/lib/' + name %}
+
+RUN useradd --home {{ homedir }} --groups kolla {{ name }} \
+    && mkdir -p {{ homedir }} \
+    && chown -R {{ name }}:{{ name }} {{ homedir }}
+
 {% if base_distro in ['centos', 'oraclelinux', 'rhel'] %}
     {% set opnfv_quagga_packages = [
         'autoconf',

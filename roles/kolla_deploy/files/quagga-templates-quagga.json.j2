@@ -1,0 +1,30 @@
+{
+    "command": "quagga --config-file /etc/quagga/quagga.conf",
+    "config_files": [
+        {
+            "source": "{{ container_config_directory }}/quagga.conf",
+            "dest": "/etc/quagga/quagga-new.conf",
+            "owner": "quagga",
+            "perm": "0600"
+        },
+        {
+            "source": "{{ container_config_directory }}/policy.json",
+            "dest": "/etc/quagga/policy.json",
+            "owner": "quagga",
+            "perm": "0600",
+            "optional": true
+        }
+    ],
+    "permissions": [
+        {
+            "path": "/var/lib/quagga",
+            "owner": "quagga:quagga",
+            "recurse": true
+        },
+        {
+            "path": "/var/log/kolla/quagga",
+            "owner": "quagga:quagga",
+            "recurse": true
+        }
+    ]
+}

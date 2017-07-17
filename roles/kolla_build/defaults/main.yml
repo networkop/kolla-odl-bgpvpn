@@ -22,15 +22,6 @@ docker_registry_port: 5000
 tmp_dir: /tmp
 
 build_overrides:
-  - section: opnfv-quagga
-    option: type
-    value: git
-  - section: opnfv-quagga
-    option: location
-    value: https://github.com/opensourcerouting/opnfv-quagga-packaging.git
-  - section: opnfv-quagga
-    option: reference
-    value: master
   - section: DEFAULT
     option: template_override
     value: "{{ tmp_dir }}/kolla/contrib/template-override/opendaylight-template-overrides.j2"
