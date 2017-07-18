@@ -47,9 +47,10 @@ RUN {{ macros.install_pip(opnfv_quagga_pip_packages | customizable("pip_packages
 
 RUN git clone https://github.com/opensourcerouting/opnfv-quagga-packaging.git && \
     cd opnfv-quagga-packaging && \
+    sed -i 's/python-pyzmq,//' rpm_template/opnfv-quagga.spec && \
     make && \
     cd rpm_package && \
-    yum localinstall * || :
+    yum -y localinstall * || :
 
 {% block opnfv_quagga_footer %}{% endblock %}
 {% block footer %}{% endblock %}
