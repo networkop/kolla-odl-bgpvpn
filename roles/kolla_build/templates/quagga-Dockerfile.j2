@@ -5,52 +5,24 @@ LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build
 
 {% import "macros.j2" as macros with context %}
 
-{% set name='quagga' %}
-{% set homedir='/var/lib/' + name %}
-
-RUN useradd --home {{ homedir }} --groups kolla {{ name }} \
-    && mkdir -p {{ homedir }} \
-    && chown -R {{ name }}:{{ name }} {{ homedir }}
-
 {% if base_distro in ['centos', 'oraclelinux', 'rhel'] %}
     {% set opnfv_quagga_packages = [
-        'autoconf',
-        'automake',
-        'gcc-c++',
         'git',
-        'groff',
-        'initscripts',
-        'libcap-devel',
-        'libtool',
-        'make',
-        'ncurses-devel',
-        'python-devel',
-        'python-pip',
-        'readline-devel',
-        'rpm-build',
-        'texinfo',
-        'zeromq',
-        'zeromq-devel'
+        'wget'
     ] %}
 
-     {% set opnfv_quagga_pip_packages = [
-        'cython==0.21.1',
-        'pyzmq==2.2.0',
-        'ply',
-        'six==1.10.0'
-    ] %}
 {% endif %}
 
 {{ macros.install_packages(opnfv_quagga_packages | customizable("packages")) }}
 
-RUN {{ macros.install_pip(opnfv_quagga_pip_packages | customizable("pip_packages"),constraints = false) }}
 
-RUN git clone https://github.com/opensourcerouting/opnfv-quagga-packaging.git && \
-    cd opnfv-quagga-packaging && \
-    sed -i 's/python-pyzmq,//' rpm_template/opnfv-quagga.spec && \
-    make && \
-    cd rpm_package && \
-    yum -y localinstall * || :
+RUN git clone https://github.com/6WIND/zrpcd.git /zrpcd && \
+    cd /zrpcd && \
+    sed -i 's/bison\*/bison-devel/' pkgsrc/dev_compile_script.sh && \
+    sed -i 's/boost\*/boost-devel boost-static/' pkgsrc/dev_compile_script.sh && \
+    chmod a+x pkgsrc/dev_compile_script.sh && \
+    pkgsrc/dev_compile_script.sh -d -b -t && \
+    rm -rf /zrpcd
 
 {% block opnfv_quagga_footer %}{% endblock %}
 {% block footer %}{% endblock %}

@@ -38,5 +38,5 @@
   with_items: "{{ build_overrides }}"
 
 - name: build all containers
-  command: "kolla-build -n kolla --push --profile odl --retries 10"
+  command: "#kolla-build -n kolla --push --profile odl --retries 10"
   changed_when: False

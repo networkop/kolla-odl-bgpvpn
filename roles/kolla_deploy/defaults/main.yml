@@ -68,4 +68,4 @@ quagga_files:
   - name: tasks
     files: [main.yml, deploy.yml, config.yml, pull.yml, precheck.yml]
   - name: templates
-    files: [quagga.json.j2, quagga.conf.j2]
+    files: [quagga.json.j2, qthriftd.conf.j2]

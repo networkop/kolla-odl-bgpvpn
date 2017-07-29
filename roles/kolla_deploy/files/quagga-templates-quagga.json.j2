@@ -1,12 +1,6 @@
 {
-    "command": "/usr/lib/quagga/qthrift/opnfv-quagga.sh",
+    "command": "/opt/quagga/sbin/zrpcd",
     "config_files": [
-        {
-            "source": "{{ container_config_directory }}/quagga.conf",
-            "dest": "/etc/quagga/quagga-new.conf",
-            "owner": "quagga",
-            "perm": "0600"
-        },
         {
             "source": "{{ container_config_directory }}/policy.json",
             "dest": "/etc/quagga/policy.json",
@@ -17,12 +11,12 @@
     ],
     "permissions": [
         {
-            "path": "/var/lib/quagga",
+            "path": "/opt/quagga/var/run/quagga",
             "owner": "quagga:quagga",
             "recurse": true
         },
         {
-            "path": "/var/log/kolla/quagga",
+            "path": "/opt/quagga/var/log/quagga",
             "owner": "quagga:quagga",
             "recurse": true
         }

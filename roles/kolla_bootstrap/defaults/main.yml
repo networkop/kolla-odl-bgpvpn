@@ -23,6 +23,7 @@ yum_packages:
   - gcc
   - ntp
   - vi
+  - qemu-guest-agent
 
 pip_packages:
   - ansible

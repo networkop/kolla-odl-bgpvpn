@@ -55,7 +55,7 @@ snapshot_exists () {
 snapshot_save () {
   check_if_one_arg "$@"
   DOMAIN_ID=$1
-  res=$(sudo virsh snapshot-create-as --domain ${DOMAIN_ID} --name ${SNAPSHOT_NAME})
+  res=$(sudo virsh snapshot-create-as --domain ${DOMAIN_ID} --name ${SNAPSHOT_NAME} --quiesce)
   if [[ $? -eq 0 ]]; then
     echo -e "\nSnapshot for domain ${DOMAIN_ID} created."
     SNAPSHOT_EXISTS=true
@@ -82,7 +82,7 @@ snapshot_revert () {
   DOMAIN_ID=$1
   snapshot_exists $DOMAIN_ID
   if [[ $SNAPSHOT_EXISTS == "true" ]]; then
-    res=$(sudo virsh snapshot-revert --domain ${DOMAIN_ID} --snapshotname ${SNAPSHOT_NAME} --running)
+    res=$(sudo virsh snapshot-revert --domain ${DOMAIN_ID} --snapshotname ${SNAPSHOT_NAME} --running --force)
     if [[ $? -eq 0 ]]; then
       echo -e "\nSnapshot ${SNAPSHOT_NAME} for domain ${DOMAIN_ID} rolled back."
       SNAPSHOT_EXISTS=true

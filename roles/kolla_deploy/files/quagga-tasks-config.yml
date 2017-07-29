@@ -21,10 +21,10 @@
   notify:
     - "Restart {{ item.key }} container"
 
-- name: Copying over quagga.conf
+- name: Copying over qthriftd.conf
   template:
-    src: "{{ item.key }}.conf.j2"
-    dest: "{{ node_config_directory }}/{{ item.key }}/quagga.conf"
+    src: "qthriftd.conf.j2"
+    dest: "{{ node_config_directory }}/{{ item.key }}/qthriftd.conf"
   register: quagga_confs
   when:
     - item.value.enabled | bool

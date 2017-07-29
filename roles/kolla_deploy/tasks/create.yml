@@ -92,11 +92,19 @@
   environment:
     ANSIBLE_HOST_KEY_CHECKING: False
 
+- name: Kolla deploy
+  command: "kolla-ansible deploy -i {{ kolla_node_home_dir }}/multinode"
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: False
 
-#- name: Kolla deploy
-#  command: "kolla-ansible deploy -i {{ kolla_node_home_dir }}/multinode"
-#  environment:
-#    ANSIBLE_HOST_KEY_CHECKING: False
+#- name: limit CPU of quagga container
+#  become: True
+#  docker_container:
+#    name: quagga
+#    state: started
+#    cpu_period: 100000
+#    cpu_quota: 10000
+#    image: 172.26.0.1:5000/kolla/centos-source-opnfv-quagga:5.0.0
 
 #- name: Kolla post-deploy
 #  command: "kolla-ansible deploy"

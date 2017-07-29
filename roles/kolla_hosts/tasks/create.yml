@@ -76,7 +76,7 @@
 - name: Create a local docker registry
   docker_container:
     name: registry
-    image: registry:2
+    image: registry
     restart_policy: always
     published_ports:
       - "5000:5000"

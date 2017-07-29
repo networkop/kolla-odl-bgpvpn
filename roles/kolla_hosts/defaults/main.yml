@@ -4,7 +4,7 @@
 # Host OS variables
 ####################
 home_dir: "{{ ansible_env.HOME }}"
-tmp_dir: "/tmp"
+tmp_dir: "{{ home_dir}}/tmp"
 libvirt_dir: "/var/lib/libvirt/images"
 host_qemu_path: "/usr/libexec/qemu-kvm"
 host_interfaces:
