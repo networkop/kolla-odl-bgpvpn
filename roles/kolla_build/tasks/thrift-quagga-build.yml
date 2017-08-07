@@ -1,0 +1,9 @@
+- name: thrift-quagga | Create template directory
+  file:
+    path: "{{ work_dir }}/kolla/docker/thrift-quagga"
+    state: directory
+
+- name: thrift-quagga | Create Dockerfile
+  copy:
+    src: "templates/quagga-Dockerfile.j2"
+    dest: "{{ work_dir }}/kolla/docker/thrift-quagga/Dockerfile.j2"

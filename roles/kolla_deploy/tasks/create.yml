@@ -10,11 +10,6 @@
     repo: https://github.com/openstack/kolla-ansible
     dest: "{{ tmp_dir }}/kolla-ansible"
 
-- name: fetch ODL change
-  shell: "git fetch https://git.openstack.org/openstack/kolla-ansible {{ kolla_odl_git_refs }} && git checkout FETCH_HEAD"
-  args:
-    chdir: "{{ tmp_dir }}/kolla-ansible"
-
 - name: Install kolla-ansible
   become: True
   pip:
@@ -56,25 +51,25 @@
     dest: "{{ kolla_node_home_dir }}/multinode"
 
 
-- name: Create opnfv-quagga directory structure
+- name: Create thrift-quagga directory structure
   become: True
   file:
-    path: "/usr/share/kolla-ansible/ansible/roles/opnfv-quagga/{{ item.name }}"
+    path: "/usr/share/kolla-ansible/ansible/roles/thrift-quagga/{{ item.name }}"
     state: directory
   with_items: "{{ quagga_files }}"
   when: quagga_files is defined
 
-- name: Add opnfv-quagga role files
+- name: Add thrift-quagga role files
   become: True
   copy:
     src: "./files/quagga-{{ item.0.name }}-{{ item.1 }}"
-    dest: "/usr/share/kolla-ansible/ansible/roles/opnfv-quagga/{{ item.0.name }}/{{ item.1 }}"
+    dest: "/usr/share/kolla-ansible/ansible/roles/thrift-quagga/{{ item.0.name }}/{{ item.1 }}"
   with_subelements:
     - "{{ quagga_files }}"
     - files
   when: quagga_files is defined
 
-- name: Add opnfv-quagga role to site.yml
+- name: Add thrift-quagga role to site.yml
   become: True
   blockinfile:
     path: "/usr/share/kolla-ansible/ansible/site.yml"
@@ -83,8 +78,8 @@
         gather_facts: false
         hosts: quagga
         roles:
-          - { role: opnfv-quagga,
-              tags: opnfv-quagga }
+          - { role: thrift-quagga,
+              tags: thrift-quagga }
   when: quagga_files is defined
 
 - name: Kolla prechecks
@@ -97,14 +92,5 @@
   environment:
     ANSIBLE_HOST_KEY_CHECKING: False
 
-#- name: limit CPU of quagga container
-#  become: True
-#  docker_container:
-#    name: quagga
-#    state: started
-#    cpu_period: 100000
-#    cpu_quota: 10000
-#    image: 172.26.0.1:5000/kolla/centos-source-opnfv-quagga:5.0.0
-
-#- name: Kolla post-deploy
-#  command: "kolla-ansible deploy"
+- name: Kolla post-deploy
+  command: "kolla-ansible post-deploy"

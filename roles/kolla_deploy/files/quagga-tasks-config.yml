@@ -21,18 +21,6 @@
   notify:
     - "Restart {{ item.key }} container"
 
-- name: Copying over qthriftd.conf
-  template:
-    src: "qthriftd.conf.j2"
-    dest: "{{ node_config_directory }}/{{ item.key }}/qthriftd.conf"
-  register: quagga_confs
-  when:
-    - item.value.enabled | bool
-    - inventory_hostname in groups[item.value.group]
-  with_dict: "{{ quagga_services }}"
-  notify:
-    - "Restart {{ item.key }} container"
-
 - name: Check Quagga containers
   kolla_docker:
     action: "compare_container"

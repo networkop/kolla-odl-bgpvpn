@@ -1,19 +1,19 @@
 FROM {{ namespace }}/{{ image_prefix }}base:{{ tag }}
 LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
 
-{% block opnfv_quagga_header %}{% endblock %}
+{% block thrift_quagga_header %}{% endblock %}
 
 {% import "macros.j2" as macros with context %}
 
 {% if base_distro in ['centos', 'oraclelinux', 'rhel'] %}
-    {% set opnfv_quagga_packages = [
+    {% set thrift_quagga_packages = [
         'git',
         'wget'
     ] %}
 
 {% endif %}
 
-{{ macros.install_packages(opnfv_quagga_packages | customizable("packages")) }}
+{{ macros.install_packages(thrift_quagga_packages | customizable("packages")) }}
 
 
 RUN git clone https://github.com/6WIND/zrpcd.git /zrpcd && \
@@ -24,5 +24,5 @@ RUN git clone https://github.com/6WIND/zrpcd.git /zrpcd && \
     pkgsrc/dev_compile_script.sh -d -b -t && \
     rm -rf /zrpcd
 
-{% block opnfv_quagga_footer %}{% endblock %}
+{% block thrift_quagga_footer %}{% endblock %}
 {% block footer %}{% endblock %}

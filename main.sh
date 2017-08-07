@@ -55,7 +55,7 @@ snapshot_exists () {
 snapshot_save () {
   check_if_one_arg "$@"
   DOMAIN_ID=$1
-  res=$(sudo virsh snapshot-create-as --domain ${DOMAIN_ID} --name ${SNAPSHOT_NAME} --quiesce)
+  res=$(sudo virsh snapshot-create-as --domain ${DOMAIN_ID} --name ${SNAPSHOT_NAME})
   if [[ $? -eq 0 ]]; then
     echo -e "\nSnapshot for domain ${DOMAIN_ID} created."
     SNAPSHOT_EXISTS=true

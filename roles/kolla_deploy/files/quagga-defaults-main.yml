@@ -4,11 +4,11 @@ project_name: "quagga"
 quagga_services:
   quagga:
     container_name: "quagga"
-    image: "{{ opnfv_quagga_image_full }}"
+    image: "{{ thrift_quagga_image_full }}"
     enabled: True
     privileged: True
     group: "opendaylight"
-    host_in_groups: "{{ True if orchestration_engine == 'KUBERNETES' else inventory_hostname in groups['opendaylight'] }}"
+    host_in_groups: "{{ inventory_hostname in groups['opendaylight'] }}"
     volumes:
       - "{{ node_config_directory }}/quagga/:{{ container_config_directory }}/:ro"
       - "/etc/localtime:/etc/localtime:ro"
@@ -18,6 +18,6 @@ quagga_services:
 # Docker
 ####################
 
-opnfv_quagga_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ kolla_install_type }}-opnfv-quagga"
-opnfv_quagga_tag: "{{ openstack_release }}"
-opnfv_quagga_image_full: "{{ opnfv_quagga_image }}:{{ opnfv_quagga_tag }}"
+thrift_quagga_image: "{{ docker_registry ~ '/' if docker_registry else '' }}{{ docker_namespace }}/{{ kolla_base_distro }}-{{ kolla_install_type }}-thrift-quagga"
+thrift_quagga_tag: "{{ openstack_release }}"
+thrift_quagga_image_full: "{{ thrift_quagga_image }}:{{ thrift_quagga_tag }}"

@@ -7,4 +7,4 @@
   when:
     - item.value.enabled | bool
     - item.value.host_in_groups | bool
-  with_dict: "{{ opendaylight_services }}"
+  with_dict: "{{ quagga_services }}"
