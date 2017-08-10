@@ -18,15 +18,7 @@
     update_cache: yes
   with_items: "{{ yum_packages }}"
 
-- name: Check if docker is installed
-  command: "docker -v"
-  changed_when: False
-  ignore_errors: True
-  register: docker_is_installed
-
-- name: Install docker
-  shell: curl -sSL https://get.docker.io | bash
-  when: docker_is_installed | failed
+- include: install_docker.yml
 
 - name: Create the drop-in unit directory for docker.service
   file:

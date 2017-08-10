@@ -1,0 +1,23 @@
+
+
+- name: Install Docker | Install dependencies
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items: 
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+
+- name: Install Docker | Enable Docker-CE repo
+  yum_repository:
+    name: docker-ce
+    description: Docker CE repo
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    gpgcheck: yes
+    gpgkey: https://download.docker.com/linux/centos/gpg
+
+- name: Install Docker | Install package
+  yum:
+    name: docker-ce
+    state: latest
