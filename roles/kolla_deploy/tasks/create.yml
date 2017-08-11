@@ -17,10 +17,11 @@
 
 - name: Copy the configuration files globals.yml and passwords.yml to /etc directory
   become: True
-  command: cp -r {{ tmp_dir }}/kolla-ansible/etc/kolla /etc/kolla/
+  command: "cp -r {{ tmp_dir }}/kolla-ansible/etc/kolla/{{ item }} /etc/kolla/"
+  with_items:
+    - globals.yml
+    - passwords.yml
 
-#- name: Copy the inventory file
-#  command: "cp {{ tmp_dir }}/kolla-ansible/ansible/inventory/multinode {{ kolla_node_home_dir }}"
 
 - name: Override globals.yml options
   become: True
@@ -93,4 +94,5 @@
     ANSIBLE_HOST_KEY_CHECKING: False
 
 - name: Kolla post-deploy
+  become: True
   command: "kolla-ansible post-deploy"
