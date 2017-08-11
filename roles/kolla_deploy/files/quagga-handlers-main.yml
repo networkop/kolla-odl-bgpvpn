@@ -15,5 +15,4 @@
     - service.enabled | bool
     - service.host_in_groups | bool
     - quagga_config_jsons | changed
-      or quagga_confs | changed
       or check_quagga_containers | changed
