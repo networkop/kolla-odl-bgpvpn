@@ -23,11 +23,12 @@ yum_packages:
   - gcc
   - ntp
   - vi
-  - qemu-guest-agent
 
 pip_packages:
   - ansible
   - tox
   - crudini
   - python-openstackclient
+  - python-neutronclient
+  - networking-bgpvpn
   - docker
