@@ -55,3 +55,11 @@ quagga_files:
     files: [main.yml, deploy.yml, config.yml, pull.yml, precheck.yml]
   - name: templates
     files: [quagga.json.j2]
+
+###############
+# BUG FIXES ###
+###############
+
+override start_ovs: True
+
+

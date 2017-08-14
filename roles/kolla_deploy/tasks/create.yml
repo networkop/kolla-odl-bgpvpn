@@ -83,6 +83,9 @@
               tags: thrift-quagga }
   when: quagga_files is defined
 
+- include: start_ovs.yml
+  when: override_start_ovs | bool
+
 - name: Kolla prechecks
   command: "kolla-ansible prechecks -i {{ kolla_node_home_dir }}/multinode"
   environment:
