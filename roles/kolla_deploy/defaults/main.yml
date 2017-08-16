@@ -15,7 +15,7 @@ kolla_vm_names:
 #############################
 password_overrides:
   keystone_admin_password: admin
-  opendaylight: admin
+  opendaylight_password: admin
 
 ###############################
 # Kolla globals.yml overrides #
