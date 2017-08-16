@@ -1,5 +1,5 @@
 
 - name: Override start_ovs
-  template:
-    src: start-ovs.j2
+  copy:
+    src: files/start-ovs.j2
     dest: /usr/share/kolla-ansible/ansible/roles/openvswitch/templates/start-ovs.j2
