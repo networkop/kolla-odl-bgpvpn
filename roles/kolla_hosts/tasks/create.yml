@@ -1,5 +1,6 @@
 ---
 - include: enable_nested_virt.yml
+  become: True
 
 - name: Enable docker repo
   yum_repository:
