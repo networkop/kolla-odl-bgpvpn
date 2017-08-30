@@ -50,7 +50,7 @@ kolla_os_default_pass: admin
 ######################
 kolla_nodes:
   - name: controller-1
-    ram: 6144
+    ram: 7168
     vcpu: 1
     role: controller-deploy
     interfaces:
@@ -68,7 +68,7 @@ kolla_nodes:
         netmask: "{{ host_interfaces | selectattr('role', 'equalto', 'ext') | map(attribute='cidr') | join | ipaddr('netmask') }}"
         role: ext
   - name: compute-1
-    ram: 2048
+    ram: 1024
     vcpu: 1
     role: compute
     interfaces:

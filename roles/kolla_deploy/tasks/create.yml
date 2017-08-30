@@ -15,13 +15,21 @@
   pip:
     name: "file://{{ tmp_dir }}/kolla-ansible"
 
+- name: Make sure /etc/kolla exists
+  become: True
+  file:
+    path: "/etc/kolla"
+    state: directory
+
 - name: Copy the configuration files globals.yml and passwords.yml to /etc directory
   become: True
-  command: "cp -r {{ tmp_dir }}/kolla-ansible/etc/kolla/{{ item }} /etc/kolla/"
+  copy:
+    dest: "/etc/kolla/{{ item }}"
+    remote_src: true
+    src: "{{ tmp_dir }}/kolla-ansible/etc/kolla/{{ item }}"
   with_items:
     - globals.yml
     - passwords.yml
-
 
 - name: Override globals.yml options
   become: True
@@ -46,11 +54,35 @@
   with_dict: "{{ password_overrides }}"
   when: password_overrides is defined
 
-- name: Create multinode inventory file
-  template:
-    src: "multinode.j2"
+- name: Copy multinode inventory file
+  copy:
+    src: "/usr/share/kolla-ansible/ansible/inventory/multinode"
+    remote_src: true
     dest: "{{ kolla_node_home_dir }}/multinode"
 
+- name: Update inventory file 
+  lineinfile:
+    path: "{{ kolla_node_home_dir }}/multinode"
+    regexp: "^{{ item.key }}"
+    line: "{{ item.value }}"
+  with_dict: "{{ inventory_override }}"
+
+- name: Add quagga to the inventory file
+  blockinfile:
+    path: "{{ kolla_node_home_dir }}/multinode"
+    block: |
+      [quagga:children]
+       network
+
+- name: Create ansible.cfg file
+  blockinfile:
+    path: "{{ kolla_node_home_dir }}/ansible.cfg"
+    create: yes
+    block: |
+      [defaults]
+      remote_user = centos
+      [privilege_escalation]
+      become = True
 
 - name: Create thrift-quagga directory structure
   become: True

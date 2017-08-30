@@ -37,7 +37,7 @@ globals_override:
   kolla_internal_vip_address: 192.168.133.254
 # Opendaylight settings
   enable_opendaylight: "{{ enable_opendaylight | bool }}"
-  neutron_plugin_agent: "{{ enable_opendaylight | bool }}"
+  neutron_plugin_agent: "{{ 'opendaylight' if enable_opendaylight | bool else 'openvswitch' }}"
 # Skydive settings
   enable_skydive: "{{ enable_skydive | bool }}"
   enable_elasticsearch: "{{ enable_skydive | bool }}"
@@ -46,6 +46,19 @@ globals_override:
   enable_barbican: "{{ enable_tacker | bool }}"
   enable_mistral: "{{ enable_tacker | bool }}"
   enable_redis: "{{ enable_tacker | bool }}"
+
+#######################
+# Inventory overrides #
+#######################
+inventory_override:
+  control01: controller-1
+  control02: ''
+  control03: ''
+  network01: controller-1
+  network02: ''
+  monitoring01: controller-1
+  storage01: compute-1
+  compute01: compute-1
 
 ############################
 # Docker registry defaults #
