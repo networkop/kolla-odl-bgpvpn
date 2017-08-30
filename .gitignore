@@ -1,3 +1,4 @@
 retry-files/
 group_vars/
 ansible.log
+*.pyc
