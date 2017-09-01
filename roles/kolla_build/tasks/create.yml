@@ -8,6 +8,8 @@
 
 - include: thrift-quagga-build.yml work_dir="{{ tmp_dir }}"
 
+- include: nova-permission-bug.yml work_dir="{{ tmp_dir }}"
+
 - name: install kolla
   pip:
     name: "file://{{ tmp_dir }}/kolla"

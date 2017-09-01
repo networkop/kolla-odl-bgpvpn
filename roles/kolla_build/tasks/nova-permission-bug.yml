@@ -1,0 +1,5 @@
+- name: nova-bugfix | Create Dockerfile
+  lineinfile:
+    path: "{{ work_dir }}/kolla/docker/nova/nova-libvirt/extend_start.sh"
+    regexp: "chown root:kvm /dev/kvm"
+    line: "chown root:qemu /dev/kvm"
