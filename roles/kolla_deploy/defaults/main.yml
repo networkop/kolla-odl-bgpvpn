@@ -35,6 +35,7 @@ globals_override:
   docker_registry: "{{ docker_registry_ip }}:{{ docker_registry_port }}"
   docker_namespace: "kolla"
   kolla_internal_vip_address: 192.168.133.254
+  enable_neutron_sfc: "yes"
 # Opendaylight settings
   enable_opendaylight: "{{ enable_opendaylight | bool }}"
   neutron_plugin_agent: "{{ 'opendaylight' if enable_opendaylight | bool else 'openvswitch' }}"

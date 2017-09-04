@@ -58,7 +58,7 @@
 - name: start virtual bridges
   become: True
   virt_net:
-    command: start
+    state: active
     autostart: yes
     name: "{{ item.name }}"
   when: item.name not in bridge_exists.list_nets
