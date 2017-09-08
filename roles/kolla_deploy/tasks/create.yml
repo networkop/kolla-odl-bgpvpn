@@ -112,6 +112,7 @@
         hosts: quagga
         roles:
           - { role: thrift-quagga,
+              when: enable_opendaylight | bool,
               tags: thrift-quagga }
   when: quagga_files is defined
 
