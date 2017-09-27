@@ -1,0 +1,10 @@
+- name: odl-latest | Override Dockerfile
+  template:
+    src: "templates/odl-Dockerfile.j2"
+    dest: "{{ work_dir }}/kolla/contrib/template-override/opendaylight-template-overrides.j2"
+
+- name: odl-latest | Remove ODL from config file
+  ini_file:
+    path: "/etc/kolla/kolla-build.conf"
+    section: "opendaylight"
+    state: absent

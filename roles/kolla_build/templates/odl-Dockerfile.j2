@@ -1,0 +1,22 @@
+{% raw %}
+{% extends parent_template %}
+
+{% block opendaylight_install %}
+  {% if base_distro in ['centos', 'oraclelinux', 'rhel'] %}
+    {% set opendaylight_packages = ['java-1.8.0-openjdk','unzip','wget'] %}
+  {% elif base_distro in ['ubuntu', 'debian'] %}
+    {% set opendaylight_packages = ['openjdk-8-jre'] %}
+  {% endif %}
+
+{{ macros.install_packages(opendaylight_packages | customizable("packages")) }}
+{% endraw %}
+
+RUN wget {{ odl_latest_url }} && \
+    unzip /karaf-*.zip && \
+    mv karaf-*/ /opendaylight 
+RUN mkdir /opt/opendaylight && \
+    ln -s /opendaylight/* /opt/opendaylight
+
+{% raw %}
+{% endblock %}
+{% endraw %}

@@ -31,6 +31,9 @@
     dest: "/etc/kolla/kolla-build.conf"
     remote_src: True
 
+- include: odl-latest-override.yml work_dir="{{ tmp_dir }}"
+  when: odl_latest_enabled | bool
+
 - name: Override build variables
   ini_file:
     path: "/etc/kolla/kolla-build.conf"

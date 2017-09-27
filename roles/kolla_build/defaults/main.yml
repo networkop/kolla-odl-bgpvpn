@@ -10,6 +10,12 @@ kolla_vm_names:
   - controller-1
   - compute-1
 
+#######################
+# ODL Master settings #
+#######################
+odl_latest_enabled: true
+odl_latest_url: https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/netvirt/karaf/0.8.0-SNAPSHOT/karaf-0.8.0-20170921.142838-824.zip
+
 ############################
 # Docker registry defaults #
 ############################
