@@ -119,6 +119,9 @@
 - include: start_ovs.yml
   when: override_start_ovs | bool
 
+- include: odl-latest-override.yml
+  when: odl_latest_enabled | bool
+
 - name: Kolla prechecks
   command: "kolla-ansible prechecks -i {{ kolla_node_home_dir }}/multinode"
   environment:

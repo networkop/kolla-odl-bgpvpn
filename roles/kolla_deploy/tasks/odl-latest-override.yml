@@ -1,0 +1,18 @@
+
+- name: update featuresRepositories
+  become: True
+  lineinfile:
+    path: /usr/share/kolla-ansible/ansible/roles/opendaylight/templates/org.apache.karaf.features.cfg.j2
+    regexp: "^featuresRepositories.*"
+    line: |
+      featuresRepositories = \
+        mvn:org.apache.karaf.features/framework/4.0.9/xml/features, \
+        mvn:org.apache.karaf.features/standard/4.0.9/xml/features, \
+        mvn:org.opendaylight.integration/features-index/0.8.0-SNAPSHOT/xml/features
+
+- name: create jetty.xml.j2 file
+  become: True
+  copy:
+    dest: "/usr/share/kolla-ansible/ansible/roles/opendaylight/templates/jetty.xml.j2"
+    src: "./files/odl-jetty.xml.j2"
+  

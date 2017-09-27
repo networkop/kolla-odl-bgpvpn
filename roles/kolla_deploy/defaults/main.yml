@@ -5,6 +5,7 @@
 ######################
 
 enable_opendaylight: "yes"
+odl_latest_enabled: "yes"
 enable_skydive: "yes"
 enable_tacker: "yes"
 
