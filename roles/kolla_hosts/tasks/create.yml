@@ -26,7 +26,7 @@
 - name: Update docker BIP
   become: True
   lineinfile:
-    path: /usr/lib/systemd/system/docker.service
+    destfile: /usr/lib/systemd/system/docker.service
     regexp: "ExecStart=/usr/bin/dockerd"
     line: "ExecStart=/usr/bin/dockerd --bip=172.26.0.1/16"
 
