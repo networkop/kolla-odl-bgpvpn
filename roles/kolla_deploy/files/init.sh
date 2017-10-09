@@ -1,6 +1,5 @@
 #!/bin/bash
 
-kolla-ansible post-deploy
 source /etc/kolla/admin-openrc.sh
 
 !

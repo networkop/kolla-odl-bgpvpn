@@ -153,3 +153,11 @@
     src: "./files/init.sh"
     dest: "{{ kolla_node_home_dir }}/init.sh"
     mode: u+rwx
+
+- name: Update RC file with ODL variables
+  lineinfile:
+    path: "/etc/kolla/admin-openrc.sh"
+    line: "{{ item }}"
+  with_items:
+    - "export ODL_URL='http://192.168.133.100:8181/restconf'"
+    - "export CT_JSON=\"Content-Type: application/json\""
