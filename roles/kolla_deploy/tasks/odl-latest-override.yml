@@ -18,7 +18,7 @@
   
 - name: enable QBGP 
   become: True
-  lininefile:
+  lineinfile:
     dest:  /usr/share/kolla-ansible/ansible/roles/opendaylight/templates/custom.properties.j2
     line: "{{ item }}"
   with_items:
