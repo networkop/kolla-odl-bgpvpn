@@ -122,6 +122,18 @@
 - include: odl-latest-override.yml
   when: odl_latest_enabled | bool
 
+- name: update config owner user and group
+  lineinfile:
+    path: "/usr/share/kolla-ansible/ansible/group_vars/all.yml"
+    regexp: "{{ item.key }}:"
+    line: "{{ item.key }}: \"{{ item.value }}\""
+    create: yes
+    state: present
+  with_dict:
+    config_owner_user: centos
+    config_owner_group: centos
+
+
 - name: Kolla prechecks
   command: "kolla-ansible prechecks -i {{ kolla_node_home_dir }}/multinode"
   environment:
@@ -135,3 +147,9 @@
 - name: Kolla post-deploy
   become: True
   command: "kolla-ansible post-deploy"
+
+- name: copy bootstrap file
+  copy:
+    src: "./files/init.sh"
+    dest: "{{ kolla_node_home_dir }}/init.sh"
+    mode: u+rwx
