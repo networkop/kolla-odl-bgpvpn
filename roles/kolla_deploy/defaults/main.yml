@@ -9,6 +9,7 @@ odl_latest_enabled: "yes"
 enable_skydive: "yes"
 enable_tacker: "yes"
 
+
 ###############
 # Kolla nodes #
 ###############
@@ -48,6 +49,8 @@ globals_override:
   enable_barbican: "{{ enable_tacker | bool }}"
   enable_mistral: "{{ enable_tacker | bool }}"
   enable_redis: "{{ enable_tacker | bool }}"
+  enable_aodh: "{{ enable_tacker | bool }}"
+  enable_ceilometer: "{{ enable_tacker | bool }}"
 
 #######################
 # Inventory overrides #
