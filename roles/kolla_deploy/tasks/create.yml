@@ -123,6 +123,7 @@
   when: odl_latest_enabled | bool
 
 - name: update config owner user and group
+  become: True
   lineinfile:
     path: "/usr/share/kolla-ansible/ansible/group_vars/all.yml"
     regexp: "{{ item.key }}:"

@@ -51,6 +51,7 @@ globals_override:
   enable_redis: "{{ enable_tacker | bool }}"
   enable_aodh: "{{ enable_tacker | bool }}"
   enable_ceilometer: "{{ enable_tacker | bool }}"
+  enable_gnocchi: "{{ enable_ceilometer | bool }}"
 
 #######################
 # Inventory overrides #
