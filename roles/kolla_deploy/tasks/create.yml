@@ -156,6 +156,7 @@
     mode: u+rwx
 
 - name: Update RC file with ODL variables
+  become: True
   lineinfile:
     path: "/etc/kolla/admin-openrc.sh"
     line: "{{ item }}"
