@@ -46,13 +46,8 @@ globals_override:
   enable_elasticsearch: "{{ enable_skydive | bool }}"
 # Tacker settings
   enable_tacker: "{{ enable_tacker | bool }}"
-  enable_barbican: "{{ enable_tacker | bool }}"
   enable_mistral: "{{ enable_tacker | bool }}"
   enable_redis: "{{ enable_tacker | bool }}"
-  enable_aodh: "{{ enable_tacker | bool }}"
-  enable_ceilometer: "{{ enable_tacker | bool }}"
-  enable_gnocchi: "{{ enable_tacker | bool }}"
-  enable_panko: "{{ enable_tacker | bool }}"
 
 #######################
 # Inventory overrides #

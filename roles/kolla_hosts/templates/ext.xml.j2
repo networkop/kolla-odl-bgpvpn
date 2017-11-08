@@ -12,7 +12,7 @@ or other application using the libvirt API.
 <network>
   <name>{{ item.name }}</name>
   <forward mode='nat'/>
-  <bridge name='{{ item.bridge }}' stp='on' delay='0'/>
+  <bridge name='{{ item.bridge }}' stp='off' delay='0'/>
   <mac address='52:54:00:ec:93:d5'/>
   <domain name='{{ item.role }}'/>
   <ip address='{{ ip }}' netmask='{{ netmask }}'>

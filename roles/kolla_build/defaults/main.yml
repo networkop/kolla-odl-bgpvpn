@@ -14,7 +14,7 @@ kolla_vm_names:
 # ODL Master settings #
 #######################
 odl_latest_enabled: true
-odl_latest_url: https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/netvirt/karaf/0.8.0-SNAPSHOT/karaf-0.8.0-20171008.162947-1069.zip
+odl_latest_url: https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/netvirt/karaf/0.8.0-SNAPSHOT/karaf-0.8.0-20171106.102232-1767.zip
 
 ############################
 # Docker registry defaults #
@@ -48,4 +48,4 @@ build_overrides:
     value: https://nexus.opendaylight.org/content/repositories/opendaylight.release/org/opendaylight/integration/distribution-karaf/0.6.1-Carbon/distribution-karaf-0.6.1-Carbon.tar.gz
   - section: profiles
     option: odl
-    value: opendaylight,thrift-quagga,chrony,cron,kolla-toolbox,fluentd,glance,haproxy,heat,horizon,keepalived,keystone,mariadb,memcached,neutron,nova,openvswitch,rabbitmq,skydive,tacker,elasticsearch,barbican,mistral,redis,aodh,gnocchi,ceilometer,panko
+    value: opendaylight,thrift-quagga,chrony,cron,kolla-toolbox,fluentd,glance,haproxy,heat,horizon,keepalived,keystone,mariadb,memcached,neutron,nova,openvswitch,rabbitmq,skydive,tacker,elasticsearch,mistral,redis
