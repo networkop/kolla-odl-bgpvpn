@@ -93,6 +93,17 @@ quagga_files:
 # BUG FIXES ###
 ###############
 
-override_start_ovs: True
+override_start_ovs: False
+bug_1727793: false
+
+############
+# Workaround for bug https://bugs.launchpad.net/kolla-ansible/+bug/1727793
+############
+uncomment_1727793:
+  - api_interface
+  - storage_interface
+  - cluster_interface
+  - tunnel_interface
+  - dns_interface
 
 

@@ -41,6 +41,9 @@
     state: present
   with_dict: "{{ globals_override }}"
 
+- include: workaround_1727793.yml
+  when: bug_1727793 | bool
+
 - name: Generate random passwords
   become: True
   command: kolla-genpwd

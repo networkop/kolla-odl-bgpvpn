@@ -1,0 +1,8 @@
+- name: Workaround for bug 1727793
+  become: True
+  lineinfile:
+    path: /etc/kolla/globals.yml
+    regexp: '^#({{ item }}.*)$'
+    line: '\1'
+    backrefs: yes 
+  with_items: "{{ uncomment_1727793 }}"
