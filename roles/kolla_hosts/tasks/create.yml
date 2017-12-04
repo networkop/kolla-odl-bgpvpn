@@ -119,17 +119,17 @@
     state: directory
   with_items: "{{ kolla_nodes }}"
 
-- name: Increase the image size
-  command: "qemu-img resize {{ tmp_dir }}/{{ kolla_os_image }} +10G"
-  when: not item.stat.exists
-  with_items: "{{ copied.results }}"
-
 - name: Copy os images to libvirt directory
   become: True
   copy:
     src: "{{ tmp_dir }}/{{ kolla_os_image }}"
     dest: "{{ libvirt_dir }}/{{ item.item.name }}.qcow2"
     remote_src: True
+  when: not item.stat.exists
+  with_items: "{{ copied.results }}"
+
+- name: Increase the image size
+  command: "qemu-img resize {{ libvirt_dir }}/{{ item.item.name }}.qcow2 +10G"
   when: not item.stat.exists
   with_items: "{{ copied.results }}"
 

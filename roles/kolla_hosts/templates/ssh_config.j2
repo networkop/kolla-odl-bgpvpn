@@ -2,11 +2,11 @@ Host kolla-controller
   Hostname {{ host_interfaces | selectattr('role', 'equalto', 'host') | map(attribute='cidr') | join | ipaddr('100') | ipaddr('address') }}
   UserKnownHostsFile /dev/null
   StrictHostKeyChecking no
-  User centos
+  User {{ kolla_os_default_user }}
 
 Host kolla-compute
   Hostname {{ host_interfaces | selectattr('role', 'equalto', 'host') | map(attribute='cidr') | join | ipaddr('101') | ipaddr('address') }}
   UserKnownHostsFile /dev/null
   StrictHostKeyChecking no
-  User centos
+  User {{ kolla_os_default_user }}
 

@@ -1,4 +1,17 @@
 #cloud-config
 password: {{ kolla_os_default_pass }}
+hostname: {{ item.name }}
 chpasswd: { expire: False }
+manage_etc_hosts: True
 ssh_pwauth: True
+users:
+  - default
+  - name: {{ kolla_os_default_user }}
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    shell: /bin/bash
+    groups: users, admin
+    ssh-authorized-keys: 
+      - "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+packages:
+  - python

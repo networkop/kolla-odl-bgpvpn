@@ -8,6 +8,19 @@
     - yum-utils
     - device-mapper-persistent-data
     - lvm2
+  when: ansible_distribution|lower == "centos"
+
+- name: Install Docker | Install dependencies (Ubuntu)
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+  when: ansible_distribution|lower == "ubuntu"
+
 
 - name: Install Docker | Enable Docker-CE repo
   yum_repository:
@@ -16,8 +29,12 @@
     baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
     gpgcheck: yes
     gpgkey: https://download.docker.com/linux/centos/gpg
+  when: ansible_distribution|lower == "centos"
+
 
 - name: Install Docker | Install package
   yum:
     name: docker-ce
     state: latest
+  when: ansible_distribution|lower == "centos"
+

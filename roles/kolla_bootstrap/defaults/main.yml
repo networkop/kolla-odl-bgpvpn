@@ -24,6 +24,20 @@ yum_packages:
   - ntp
   - vi
 
+apt_packages:
+  - python-pip
+  - python-dev
+  - libffi-dev
+  - openssl
+  - gcc
+  - ntp
+  - vim
+  - sshpass
+  - python-oslo-config
+  - libssl-dev
+  - qemu-kvm
+
+
 pip_packages:
   - ansible
   - tox
@@ -32,3 +46,4 @@ pip_packages:
   - python-neutronclient
   - networking-bgpvpn
   - docker
+  - pyOpenSSL==16.2.0
