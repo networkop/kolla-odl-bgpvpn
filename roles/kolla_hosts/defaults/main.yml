@@ -48,6 +48,7 @@ kolla_os_default_pass: admin
 ######################
 # Kolla VMs variables
 ######################
+extra_disk_space: 10G
 kolla_nodes:
   - name: controller-1
     ram: 7168

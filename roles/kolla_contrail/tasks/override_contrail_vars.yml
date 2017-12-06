@@ -1,0 +1,35 @@
+---
+- name: Update API interface address
+  replace:
+    path: "{{ item }}"
+    regexp: '10.87.1.49'
+    replace: '192.168.133.100'
+  with_items:
+    - "{{ global_vars }}"
+    - "{{ contrail_inventory }}"
+    - "{{ contrail_vars }}"
+
+- name: Update API interface name
+  lineinfile:
+    path: "{{ item }}"
+    regexp: 'network_interface: "ens3"'
+    line: 'network_interface: "ens4"'
+  with_items:
+    - "{{ global_vars }}"
+
+- name: Update EXT interface name
+  lineinfile:
+    path: "{{ item }}"
+    regexp: 'neutron_external_interface: "ens4"'
+    line: 'neutron_external_interface: "ens5"'
+  with_items:
+    - "{{ global_vars }}"
+
+- name: Update API interface name
+  lineinfile:
+    path: "{{ item }}"
+    regexp: 'vrouter_physical_interface: ens3'
+    line: 'vrouter_physical_interface: ens4'
+  with_items:
+    - "{{ contrail_vars }}"
+

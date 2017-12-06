@@ -129,7 +129,7 @@
   with_items: "{{ copied.results }}"
 
 - name: Increase the image size
-  command: "qemu-img resize {{ libvirt_dir }}/{{ item.item.name }}.qcow2 +10G"
+  command: "qemu-img resize {{ libvirt_dir }}/{{ item.item.name }}.qcow2 +{{ extra_disk_space }}"
   when: not item.stat.exists
   with_items: "{{ copied.results }}"
 

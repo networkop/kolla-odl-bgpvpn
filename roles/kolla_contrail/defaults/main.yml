@@ -1,0 +1,67 @@
+---
+################
+# Dependencies #
+################
+
+apt_packages:
+  - python-pip
+  - python-dev
+  - libffi-dev
+  - openssl
+  - gcc
+  - ntp
+  - vim
+  - sshpass
+  - python-oslo-config
+  - libssl-dev
+  - qemu-kvm
+  - python3-oslo.config
+
+
+pip_packages:
+  - ansible
+  - tox
+  - crudini
+  - python-openstackclient
+  - python-neutronclient
+  - networking-bgpvpn
+  - docker
+  - pyOpenSSL==16.2.0
+
+
+#####################
+# Install variables #
+#####################
+
+tmp_dir: /tmp
+contrail_git_url: https://github.com/gokulpch/OpenContrail-Kolla.git
+contrail_dir: "{{ tmp_dir }}/OpenContrail-Kolla"
+global_vars: "{{ contrail_dir }}/kolla-ansible/etc/kolla/globals.yml"
+contrail_inventory: "{{ contrail_dir }}/contrail-ansible/playbooks/inventory/my-inventory/hosts"
+contrail_vars: "{{ contrail_dir }}/contrail-ansible/playbooks/inventory/my-inventory/group_vars/all.yml"
+kolla_inventory: "{{ contrail_dir }}/kolla-ansible/ansible/inventory/all-in-one"
+kolla_passwords: "{{ contrail_dir }}/kolla-ansible/etc/kolla/passwords.yml"
+kolla_playbook: "{{ contrail_dir }}/kolla-ansible/ansible/site.yml"
+kolla_hosts_playbook: "{{ contrail_dir }}/kolla-ansible/ansible/kolla-host.yml"
+contrail_playbook: "{{ contrail_dir }}/contrail-ansible/playbooks/site.yml"
+
+default_api_address: "10.87.1.49"
+default_api_interface: "ens3"
+default_ext_interface: "ens4"
+
+######################
+# Override variables #
+######################
+new_api_address: "192.168.133.100"
+new_api_interface: "ens4"
+new_ext_interface: "ens5"
+
+override_api_interface:
+  - "{{ global_vars }}"
+  - "{{ contrail_inventory }}"
+  - "{{ contrail_vars }}"
+override_api_address:
+  - "{{ contrail_vars }}"
+override_ext_interface:
+  - "{{ global_vars }}"
+

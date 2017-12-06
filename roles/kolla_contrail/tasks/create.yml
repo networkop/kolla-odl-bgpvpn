@@ -1,75 +1,33 @@
 ---
 - include: enable_nested_virt.yml
 
-- name: Disable SELinus
-  selinux:
-    state: disabled
-  when: ansible_distribution|lower == "centos"
-
-- name: Add epel repository
-  yum_repository:
-    name: epel
-    description: EPEL YUM repo
-    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
-    gpgcheck: no
-  when: ansible_distribution|lower == "centos"
-
-- name: Install dependencies
-  yum:
+- name: Install dependencies (ubuntu)
+  apt:
     name: "{{ item }}"
-    update_cache: yes
-  with_items: "{{ yum_packages }}"
-  when: ansible_distribution|lower == "centos"
-
-- include: install_docker.yml
-
-- name: Create the drop-in unit directory for docker.service
-  file:
-    path: /etc/systemd/system/docker.service.d
-    state: directory
-
-- name: Enable insecure registry
-  lineinfile:
-    path: /etc/sysconfig/docker
-    create: yes
-    line: "INSECURE_REGISTRY='--insecure-registry {{ docker_registry_ip }}:{{ docker_registry_port }}'"
-
-- name: Create the drop-in unit file
-  lineinfile:
-    path: /etc/systemd/system/docker.service.d/kolla.conf
-    create: yes
-    line: |
-      [Service]
-      MountFlags=shared
-      EnvironmentFile=/etc/sysconfig/docker
-      ExecStart=
-      ExecStart=/usr/bin/dockerd $INSECURE_REGISTRY
-
-- name: Restart docker
-  systemd:
-    name: docker
-    daemon_reload: yes
-    state: restarted
-    enabled: yes
-
-- name: Install docker python library
-  pip: name=docker state=latest
+  with_items: "{{ apt_packages }}"
+  when: ansible_distribution|lower == "ubuntu"
 
 - name: Start NTP
   systemd:
-    name: ntpd
+    name: ntp
     enabled: yes
     state: started
 
-- name: Install Ansible from PIP
+- name: Upgrade pip
+  pip:
+    name: pip
+    extra_args: --upgrade
+
+- name: Install PIP packages
   pip:
     name: "{{ item }}"
+    umask: "0022"
     state: latest
   when: '"DEPLOY" in role|upper'
   with_items: "{{ pip_packages }}"
 
 - name: Install git
-  yum:
+  apt:
     name:
       - git
     state: latest
@@ -133,3 +91,52 @@
     key: "{{ root_ssh_key['content'] | b64decode }}"
   delegate_to: "{{ hostvars[item]['ansible_ssh_host'] }}"
   with_items: "{{ groups['kolla-nodes'] }}"
+
+- name: Clone Contrail git repo
+  become: "{{ ansible_ssh_user }}"
+  git:
+    repo: "{{ contrail_git_url }}"
+    dest: "{{ contrail_dir }}"
+    force: yes
+  when: '"DEPLOY" in role|upper'
+
+- name: Override contrail default variables
+  include: override_contrail_vars.yml
+  when: '"DEPLOY" in role|upper'
+
+- name: Bootstrap nodes
+  shell: "ansible-playbook \
+            -i {{ kolla_inventory }} \
+            -e @{{ global_vars }} \
+            -e @{{ kolla_passwords }} \
+            -e action=bootstrap-servers \
+            {{ kolla_hosts_playbook }}"
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: False
+  args:
+    executable: /bin/bash
+  when: '"DEPLOY" in role|upper'
+
+- name: Install Kolla
+  shell: "ansible-playbook \
+            -i {{ kolla_inventory }} \
+            -e @{{ global_vars }} \
+            -e @{{ kolla_passwords }} \
+            -e action=deploy \
+            {{ kolla_playbook }}"
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: False
+  args:
+    executable: /bin/bash
+  when: '"DEPLOY" in role|upper'
+
+- name: Install Contrail
+  shell: "ansible-playbook \
+            -i {{ contrail_inventory }} \
+            {{ contrail_playbook }}"
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: False
+  args:
+    executable: /bin/bash
+  when: '"DEPLOY" in role|upper'
+

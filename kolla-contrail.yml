@@ -1,0 +1,7 @@
+---
+
+- name: Boostrap kolla VMs
+  hosts: kolla-nodes
+  become: True
+  roles:
+    - kolla_contrail
