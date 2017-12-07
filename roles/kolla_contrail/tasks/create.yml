@@ -130,6 +130,9 @@
     executable: /bin/bash
   when: '"DEPLOY" in role|upper'
 
+- name: Workaround for vrouter to change default route over ens4
+  command: ip route change default via 192.168.133.1
+
 - name: Install Contrail
   shell: "ansible-playbook \
             -i {{ contrail_inventory }} \
