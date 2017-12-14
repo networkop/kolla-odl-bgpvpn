@@ -143,3 +143,27 @@
     executable: /bin/bash
   when: '"DEPLOY" in role|upper'
 
+- name: copy bootstrap file
+  copy:
+    src: "./files/init.sh"
+    dest: "{{ kolla_node_home_dir }}/init.sh"
+    mode: u+rwx
+
+- name: Copy globals and passwords into /etc/kolla
+  copy:
+    remote_src: yes
+    src: "{{ item }}"
+    dest: "/etc/kolla/"
+  with_items:
+    - {{ kolla_passwords }}
+    - {{ global_vars }}
+
+- name: Generate admin-rc file
+  command: "{{ kolla_tools }}/kolla-ansible post-deploy"
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: False
+  args:
+    executable: /bin/bash
+  when: '"DEPLOY" in role|upper'
+
+

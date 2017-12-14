@@ -44,6 +44,7 @@ kolla_passwords: "{{ contrail_dir }}/kolla-ansible/etc/kolla/passwords.yml"
 kolla_playbook: "{{ contrail_dir }}/kolla-ansible/ansible/site.yml"
 kolla_hosts_playbook: "{{ contrail_dir }}/kolla-ansible/ansible/kolla-host.yml"
 contrail_playbook: "{{ contrail_dir }}/contrail-ansible/playbooks/site.yml"
+kolla_tools: "{{ contrail_dir }}/kolla-ansible/tools"
 
 default_api_address: "10.87.1.49"
 default_api_interface: "ens3"
