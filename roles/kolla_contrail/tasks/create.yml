@@ -148,6 +148,7 @@
     src: "./files/init.sh"
     dest: "{{ kolla_node_home_dir }}/init.sh"
     mode: u+rwx
+  when: '"DEPLOY" in role|upper'
 
 - name: Copy globals and passwords into /etc/kolla
   copy:
@@ -155,11 +156,12 @@
     src: "{{ item }}"
     dest: "/etc/kolla/"
   with_items:
-    - {{ kolla_passwords }}
-    - {{ global_vars }}
+    - "{{ kolla_passwords }}"
+    - "{{ global_vars }}"
+  when: '"DEPLOY" in role|upper'
 
 - name: Generate admin-rc file
-  command: "{{ kolla_tools }}/kolla-ansible post-deploy"
+  shell: "{{ kolla_tools }}/kolla-ansible post-deploy"
   environment:
     ANSIBLE_HOST_KEY_CHECKING: False
   args:

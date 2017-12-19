@@ -33,6 +33,7 @@ pip_packages:
 # Install variables #
 #####################
 
+kolla_node_home_dir: "{{ ansible_env.HOME }}"
 tmp_dir: /tmp
 contrail_git_url: https://github.com/gokulpch/OpenContrail-Kolla.git
 contrail_dir: "{{ tmp_dir }}/OpenContrail-Kolla"

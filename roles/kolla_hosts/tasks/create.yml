@@ -54,6 +54,7 @@
     xml: '{{ lookup("template", "{{ item.role }}.xml.j2") }}'
   when: item.name not in bridge_exists.list_nets
   with_items: "{{ host_interfaces }}"
+  ignore_errors: True
 
 - name: start virtual bridges
   become: True
